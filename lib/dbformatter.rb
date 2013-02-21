@@ -1,7 +1,6 @@
 require 'rspec/core/formatters/base_text_formatter'
 require 'active_record'
 require 'yaml'
-# require_relative 'connectdb'
 
 =begin 
  
@@ -58,7 +57,7 @@ class DBFormatter < RSpec::Core::Formatters::BaseTextFormatter
     def insert_test_case(example)
       @testcase = TestCase.create(
         :testrun_id=>@testrun.id,
-        :test_group=>@example_group.display_name,
+        :test_group=>@example_group.top_level_description,
         :description=>example.description,
         :execution_result=>example.execution_result[:status],
         :duration=>example.execution_result[:run_time],
@@ -72,6 +71,13 @@ class DBFormatter < RSpec::Core::Formatters::BaseTextFormatter
           :metadata=>example.metadata
         )
       end
+      
+      if @example_group.top_level_description != @example_group.display_name
+        @testcase.update_attributes(
+          :context=>@example_group.display_name
+        )
+      end
+        
     end  
     
     def insert_test_run(duration, example_count, failure_count, pending_count)
