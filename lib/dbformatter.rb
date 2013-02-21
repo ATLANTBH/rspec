@@ -54,6 +54,7 @@ class DBFormatter < RSpec::Core::Formatters::BaseTextFormatter
       @testsuite = TestSuite.find_or_create_by_suite(:suite=>@config["options"]["suite"])
     end
     
+    
     def insert_test_case(example)
       @testcase = TestCase.create(
         :testrun_id=>@testrun.id,
@@ -64,7 +65,7 @@ class DBFormatter < RSpec::Core::Formatters::BaseTextFormatter
         :pending_message=>example.execution_result[:pending_message].to_s,
         :exception=>example.execution_result[:exception].to_s
         )
-      
+    
       if @config["options"]["backtrace"] == "ON" 
         @testcase.update_attributes(
           :backtrace=>example.execution_result[:backtrace], #fix 
@@ -72,7 +73,7 @@ class DBFormatter < RSpec::Core::Formatters::BaseTextFormatter
         )
       end
       
-      if @example_group.top_level_description != @example_group.display_name
+      if !example_group.top_level? #@example_group.top_level_description != @example_group.display_name
         @testcase.update_attributes(
           :context=>@example_group.display_name
         )
