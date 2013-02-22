@@ -2,9 +2,6 @@ require 'rspec/core/formatters/base_text_formatter'
 require 'active_record'
 require 'yaml'
 require 'logger'
-require 'test_case'
-require 'test_run'
-require 'test_suite'
 
 =begin 
  
@@ -28,6 +25,19 @@ require 'test_suite'
     close
 
 =end
+
+class TestCase < ActiveRecord::Base
+  belongs_to :testrun
+end
+
+class TestRun < ActiveRecord::Base
+  has_many :testcases
+  belongs_to :testsuite
+end
+
+class TestSuite < ActiveRecord::Base
+  has_many :testruns
+end
 
 
 class DBFormatter < RSpec::Core::Formatters::BaseTextFormatter
