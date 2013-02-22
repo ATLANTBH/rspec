@@ -1,8 +1,8 @@
 require 'yaml'
 require 'active_record'
 
-dbconfig = YAML::load(File.open('./database.yml'))
-ActiveRecord::Base.establish_connection(dbconfig)
+dbconfig = YAML::load(File.open('./config.yml'))
+ActiveRecord::Base.establish_connection(dbconfig["dbconnection"])
 
 ActiveRecord::Base.transaction do
 
