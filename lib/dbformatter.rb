@@ -1,6 +1,7 @@
 require 'rspec/core/formatters/base_text_formatter'
 require 'active_record'
 require 'yaml'
+require 'pp'
 require 'logger'
 
 =begin 
@@ -47,16 +48,23 @@ class DBFormatter < RSpec::Core::Formatters::BaseTextFormatter
     def initialize(output)
       @output = output || StringIO.new
       @results = {} 
-      
-      @config = YAML::load(File.open('./config/config.yml'))
-      
-      
+	  
+	    rspec_file = '.rspec'
+      file_path = nil
+	    File.open(rspec_file).each do |line|
+		   if (line.include? '--options')
+			  line.slice!('--options ')
+        file_path = line
+		   end
+	    end
+	  
+	    @config = YAML::load(File.open(file_path))
+
       # ActiveRecord::Base.logger = Logger.new(File.open('database.log', 'w'))
       
       ActiveRecord::Base.establish_connection(@config["dbconnection"])
       @testrun = TestRun.create()
       @testsuite = TestSuite.find_or_create_by_suite(:suite=>@config["options"]["suite"])
-      
     end
     
     
