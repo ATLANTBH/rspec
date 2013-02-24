@@ -9,4 +9,5 @@ Database Formatter enables writing RSpec test results into a database
 - bundle install (to make sure you have the required gems, including dbformatter)
 - check config.yml configuration (db connection)
 - execute creadedb.rb to create tables and relations in the db
-- check that .rspec file calls the formatter --require dbformatter --format DBFormatter
+- check that .rspec file calls the formatter --require dbformatter --format DBFormatter and contains --options with location to config.yml defined
+- run rspec tests from the location where .rspec file exist, to be able to pick up parameters defined in .rspec
