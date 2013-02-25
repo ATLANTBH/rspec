@@ -1,12 +1,7 @@
 require 'rspec/core/formatters/base_text_formatter'
 require 'active_record'
 require 'yaml'
-<<<<<<< HEAD:lib/dbformatter.rb
-require 'pp'
-require 'logger'
-=======
 #require 'logger' # require only if you turn on database logging for debugging, e.g. ActiveRecord::Base.logger = Logger.new(File.open('database.log', 'w'))
->>>>>>> refactoring, adding config file check:lib/rspec2db.rb
 
 =begin 
   rspec2db formatter lets you write RSpec test results and all details produced by formatters to a database
@@ -33,27 +28,21 @@ require 'logger'
 =end
 
 class TestCase < ActiveRecord::Base
-=begin
-  "testcase" is the core concept and corresponds to RSpec Example (it...do...end)
-  this part logs example details (Describe, Context, it), execution result and other details (exception, pending message etc.)
-=end  
+  # "testcase" is the core concept and corresponds to RSpec Example (it...do...end)
+  # this part logs example details (Describe, Context, it), execution result and other details (exception, pending message etc.)
   belongs_to :testrun
 end
 
 class TestRun < ActiveRecord::Base
-=begin
-  "testrun" records time of the test execution, duration, pass rate 
-  and contains build number as specified in the yml configuration file  
-=end
+  # "testrun" records time of the test execution, duration, pass rate 
+  # and contains build number as specified in the yml configuration file  
   has_many :testcases
   belongs_to :testsuite
 end
 
 class TestSuite < ActiveRecord::Base 
-=begin 
-  depending on your needs, you may have more "testsuites" (e.g. Regression, Full, Quick, Smoke etc) 
-  or multiple projects that share the same database for RSpec test results
-=end  
+  # depending on your needs, you may have more "testsuites" (e.g. Regression, Full, Quick, Smoke etc) 
+  # or multiple projects that share the same database for RSpec test results
   has_many :testruns
 end
 
@@ -65,20 +54,6 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
     def initialize(output)
       @output = output || StringIO.new
       @results = {} 
-<<<<<<< HEAD:lib/dbformatter.rb
-	  
-	    rspec_file = '.rspec'
-      file_path = nil
-	    File.open(rspec_file).each do |line|
-		   if (line.include? '--options')
-			  line.slice!('--options ')
-        file_path = line
-		   end
-	    end
-	  
-	    @config = YAML::load(File.open(file_path))
-
-=======
       # open the yml configuration file to read db connection and other properties
       rspec_file = '.rspec'
       file_path = nil
@@ -98,15 +73,11 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
         abort("exiting... please check your config file")
       end
       
->>>>>>> refactoring, adding config file check:lib/rspec2db.rb
       # ActiveRecord::Base.logger = Logger.new(File.open('database.log', 'w'))
       ActiveRecord::Base.establish_connection(@config["dbconnection"])
       @testrun = TestRun.create()
-<<<<<<< HEAD:lib/dbformatter.rb
-      @testsuite = TestSuite.find_or_create_by_suite(:suite=>@config["options"]["suite"])
-=======
       @testsuite = TestSuite.find_or_create_by_suite(:suite=>@config["options"]["suite"]) 
->>>>>>> refactoring, adding config file check:lib/rspec2db.rb
+
     end
     
     
