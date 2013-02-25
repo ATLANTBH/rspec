@@ -1,5 +1,5 @@
-rspec2db: rspec dbformatter
-===========================
+rspec2db: RSpec DB Formatter
+============================
 
 Database Formatter enables writing RSpec test results into a database
 
