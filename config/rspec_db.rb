@@ -18,6 +18,7 @@ ActiveRecord::Base.transaction do
     t.integer :failure_count
     t.integer :pending_count
     t.string :build
+    t.string :computer_name
     t.timestamps
   end
   
