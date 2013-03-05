@@ -1,3 +1,4 @@
+require 'rubygems'
 require 'yaml'
 require 'active_record'
 
@@ -12,17 +13,16 @@ ActiveRecord::Base.transaction do
   end  
     
   ActiveRecord::Migration.create_table :test_runs do |t|
-    t.references :testsuite 
     t.float :duration
     t.integer :example_count
     t.integer :failure_count
     t.integer :pending_count
     t.string :build
     t.timestamps
+	t.references :test_suite
   end
   
   ActiveRecord::Migration.create_table :test_cases do |t|
-    t.references :testrun
     t.string :test_group
     t.string :context
     t.string :description
@@ -33,6 +33,6 @@ ActiveRecord::Base.transaction do
     t.text :backtrace
     t.text :metadata
     t.timestamps
+	t.references :test_runs
   end
-
 end
