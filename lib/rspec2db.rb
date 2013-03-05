@@ -149,7 +149,8 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
         :example_count=>example_count, 
         :failure_count=>failure_count, 
         :pending_count=>pending_count,
-        :build=>@config["options"]["build"])       
+        :build=>@config["options"]["build"],
+        :computer_name=>ENV["COMPUTERNAME"])       
     end
 
     def seed(seed)
