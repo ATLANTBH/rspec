@@ -20,7 +20,7 @@ ActiveRecord::Base.transaction do
     t.string :build
     t.string :computer_name
     t.timestamps
-	t.references :test_suite
+	t.references :test_suites
   end
   
   ActiveRecord::Migration.create_table :test_cases do |t|
