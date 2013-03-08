@@ -58,11 +58,9 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
       rspec_file = '.rspec'
       file_path = nil
       File.open(rspec_file).each do |line|
-       if (line.include? '--options')
-         if (line.include? '.yml')
+       if (line.match('--options\s?.+yml')) # filter lines that contain path to yml file
            line.slice!('--options ')
-           file_path = line
-         end
+           file_path = line.strip
        end
       end
       if File.exists?(file_path)
