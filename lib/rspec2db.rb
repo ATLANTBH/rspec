@@ -85,7 +85,7 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
     
     def insert_test_case(example)
       @testcase = TestCase.create(
-        :testrun_id=>@testrun.id,
+        :test_runs_id=>@testrun.id,
         :test_group=>@example_group.top_level_description,
         :description=>example.description,
         :execution_result=>example.execution_result[:status],
@@ -146,7 +146,7 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
 
     def dump_summary(duration, example_count, failure_count, pending_count)
        @testrun.update_attributes(
-        :testsuite_id=>@testsuite.id,
+        :test_suites_id=>@testsuite.id,
         :duration=>duration, 
         :example_count=>example_count, 
         :failure_count=>failure_count, 
