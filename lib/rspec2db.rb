@@ -59,8 +59,10 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
       file_path = nil
       File.open(rspec_file).each do |line|
        if (line.include? '--options')
-        line.slice!('--options ')
-        file_path = line
+         if (line.include? '.yml')
+           line.slice!('--options ')
+           file_path = line
+         end
        end
       end
       if File.exists?(file_path)
