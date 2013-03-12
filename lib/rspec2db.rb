@@ -91,9 +91,25 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
         :pending_message=>example.execution_result[:pending_message].to_s,
         :exception=>example.execution_result[:exception].to_s)
       if @config["options"]["backtrace"] # write additional details if backtrace is configured to true
-        @testcase.update_attributes(
-          :backtrace=>example.execution_result[:backtrace], #fix 
-          :metadata=>example.metadata)
+
+		    backtrace_content = example.execution_result[:exception].backtrace if !example.execution_result[:exception].nil?
+        stripped_backtrace_content = Array.new()              
+
+        if !backtrace_content.nil? 
+          backtrace_content.each do |content|
+            stripped_backtrace_content << content if !content.include? "ruby/gems" #Fix me if find better way to filter
+          end
+
+          @testcase.update_attributes(    
+          :backtrace=>stripped_backtrace_content, 
+          :metadata=>example.metadata
+          )
+        else
+          @testcase.update_attributes(    
+          :backtrace=>backtrace_content, 
+          :metadata=>example.metadata
+          )
+        end
       end
       if !example_group.top_level? # check for detecting Context (as opposed to Describe group)
         @testcase.update_attributes(
