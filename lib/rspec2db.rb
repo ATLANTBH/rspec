@@ -78,8 +78,7 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
       @testrun = TestRun.create()
       @testsuite = TestSuite.find_or_create_by_suite(:suite=>@config["options"]["suite"]) 
 
-    end
-    
+    end    
     
     def insert_test_case(example)
       @testcase = TestCase.create(
@@ -90,26 +89,11 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
         :duration=>example.execution_result[:run_time],
         :pending_message=>example.execution_result[:pending_message].to_s,
         :exception=>example.execution_result[:exception].to_s)
-      if @config["options"]["backtrace"] # write additional details if backtrace is configured to true
-
-		    backtrace_content = example.execution_result[:exception].backtrace if !example.execution_result[:exception].nil?
-        stripped_backtrace_content = Array.new()              
-
-        if !backtrace_content.nil? 
-          backtrace_content.each do |content|
-            stripped_backtrace_content << content if !content.include? "ruby/gems" #Fix me if find better way to filter
-          end
-
-          @testcase.update_attributes(    
-          :backtrace=>stripped_backtrace_content, 
-          :metadata=>example.metadata
-          )
-        else
-          @testcase.update_attributes(    
-          :backtrace=>backtrace_content, 
-          :metadata=>example.metadata
-          )
-        end
+      if @config["options"]["backtrace"] && !example.execution_result[:exception].nil? # write additional details if backtrace is configured to true         
+         @testcase.update_attributes(    
+         :backtrace=>format_backtrace(example.execution_result[:exception].backtrace, example).join("\n"),
+         :metadata=>example.metadata
+         )
       end
       if !example_group.top_level? # check for detecting Context (as opposed to Describe group)
         @testcase.update_attributes(
