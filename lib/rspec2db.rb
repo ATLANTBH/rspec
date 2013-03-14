@@ -76,6 +76,14 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
       # ActiveRecord::Base.logger = Logger.new(File.open('database.log', 'w'))
       ActiveRecord::Base.establish_connection(@config["dbconnection"])
       @testrun = TestRun.create()
+      @testrun.update_attributes(
+        :test_suites_id=>nil,
+        :duration=>nil, 
+        :example_count=>nil, 
+        :failure_count=>nil, 
+        :pending_count=>nil,
+        :build=>@config["options"]["build"],
+        :computer_name=>ENV["COMPUTERNAME"])
       @testsuite = TestSuite.find_or_create_by_suite(:suite=>@config["options"]["suite"]) 
 
     end    
