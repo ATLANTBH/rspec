@@ -100,14 +100,26 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
       if @config["options"]["backtrace"] && !example.execution_result[:exception].nil? # write additional details if backtrace is configured to true         
          @testcase.update_attributes(    
          :backtrace=>format_backtrace(example.execution_result[:exception].backtrace, example).join("\n"),
-         :metadata=>example.metadata
+         :metadata=>print_example_failed_content(example)
          )
       end
       if !example_group.top_level? # check for detecting Context (as opposed to Describe group)
         @testcase.update_attributes(
           :context=>@example_group.display_name)
       end
-    end  
+    end
+
+    def print_example_failed_content(example)
+      exception = example.metadata[:execution_result][:exception]
+      backtrace_content = exception.backtrace.map { |line| backtrace_line(line) }
+      backtrace_content.compact!
+
+      @snippet_extractor ||= RSpec::Core::Formatters::SnippetExtractor.new
+      snippet_content = @snippet_extractor.snippet(backtrace_content)
+      snippet_content = snippet_content.sub( "class=\"offending\"", "class=\"offending\" style=\"background-color: red;\"" )
+      print_content = "    <pre class=\"ruby\" style=\"background-color: #E6E6E6; border: 1px solid;\"><code>#{snippet_content}</code></pre>"
+      return print_content
+    end    
 
     def start(example_count)
     end
