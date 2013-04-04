@@ -1,4 +1,5 @@
 require 'rspec/core/formatters/base_text_formatter'
+require 'rspec/core/formatters/snippet_extractor'
 require 'active_record'
 require 'yaml'
 #require 'logger' # require only if you turn on database logging for debugging, e.g. ActiveRecord::Base.logger = Logger.new(File.open('database.log', 'w'))
