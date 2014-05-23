@@ -85,7 +85,7 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
         :pending_count=>nil,
         :build=>@config["options"]["build"],
         :computer_name=>ENV["COMPUTERNAME"])
-      @testsuite = TestSuite.find_or_create_by_suite(:suite=>@config["options"]["suite"]) 
+      @testsuite = TestSuite.find_or_create_by(:suite=>@config["options"]["suite"]) 
 
     end    
     
