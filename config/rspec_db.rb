@@ -28,7 +28,7 @@ ActiveRecord::Base.transaction do
     t.string :context
     t.string :description
     t.string :execution_result
-    t.string :exception
+    t.text :exception
     t.string :pending_message
     t.float :duration
     t.text :backtrace
