@@ -1,7 +1,9 @@
 rspec2db: RSpec DB Formatter
 ============================
 
-Database Formatter enables writing RSpec test results into a database
+Database Formatter enables writing RSpec test results into database.
+
+Installation steps:
 
 - Install postgres database 
 
