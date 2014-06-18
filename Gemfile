@@ -1,4 +1,4 @@
-source :rubygems
+source 'http://rubygems.org'
 
 gem 'activerecord', :require => "active_record"
 gem 'pg' # if you are using postgres database

@@ -18,10 +18,12 @@ GEM
     builder (3.0.4)
     i18n (0.6.1)
     multi_json (1.6.1)
+    pg (0.14.1)
     pg (0.14.1-x86-mingw32)
     tzinfo (0.3.35)
 
 PLATFORMS
+  ruby
   x86-mingw32
 
 DEPENDENCIES
