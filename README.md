@@ -5,8 +5,7 @@ Database Formatter enables writing RSpec test results into a database
 
 - Install postgres database 
 
-- git clone this (rspec) repository. 
-Note: xcode (developers tools) should be installed in order to run git command
+- git clone this (rspec) repository
 
 - gem build rspec2db.gemspec from "rspec" directory (to build the rspec2db gem)
 
@@ -27,7 +26,9 @@ Ubuntu - apt-get install libpq-dev before running gem install pg -v '0.14.1'
 
 - install rspec gem (e.g. sudo gem install rspec -v 2.13.0)
 
-- initialize your project RSpec (e.g. rspec --init)
+- initialize your RSpec project (e.g. rspec --init), if you don't have one already
+
+- copy /rspec/config/rspec2db.yml to your rspec project (e.g. ./config/rspec2db.yml)
 
 - check that .rspec file contains following: --require rspec2db --format Rspec2db --options with location to rspec2db.yml relative to .rspec file (e.g. --options ./config/rspec2db.yml)
 
