@@ -28,8 +28,6 @@ Ubuntu - apt-get install libpq-dev before running gem install pg -v '0.14.1'
 
 - execute rspec_db.rb (/rspec/config) to create tables and relations in the database (e.g.ruby rspec_db.rb)
 
-- install rspec gem (e.g. sudo gem install rspec -v 2.13.0)
-
 - initialize your RSpec project (e.g. rspec --init), if you don't have one already
 
 - copy /rspec/config/rspec2db.yml to your rspec project (e.g. ./config/rspec2db.yml)
