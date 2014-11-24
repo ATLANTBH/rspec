@@ -106,7 +106,7 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
       end
       if !example_group.top_level? # check for detecting Context (as opposed to Describe group)
         @testcase.update_attributes(
-          :context=>@example_group.display_name)
+          :context=>@example_group.description)
       end
     end
 
