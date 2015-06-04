@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.files       = ["lib/rspec2db.rb"]
   s.homepage    = 'https://github.com/ATLANTBH/rspec'
 
-  s.add_dependency 'activerecord', '~>4.2.1'
+  s.add_dependency 'activerecord', '~>3.2.12'
   s.add_dependency 'pg' # if you are using postgres database
   s.add_dependency 'activerecord-postgresql-adapter' # if you are using postgres database
   s.add_dependency 'rspec', "2.99.0" #formatter currently not compatible with RSpec 3
