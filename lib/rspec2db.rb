@@ -1,5 +1,5 @@
 require 'rspec/core/formatters/base_text_formatter'
-require 'rspec/core/formatters/snippet_extractor'
+require 'rspec/core/formatters/html_snippet_extractor'
 require 'active_record'
 require 'yaml'
 #require 'logger' # require only if you turn on database logging for debugging, e.g. ActiveRecord::Base.logger = Logger.new(File.open('database.log', 'w'))
@@ -50,43 +50,23 @@ end
 
 class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
   
+    RSpec::Core::Formatters.register self, :start,
+                                           :example_group_started,
+                                           :example_started,
+                                           :example_passed,
+                                           :example_pending,
+                                           :example_failed,
+                                           :dump_failures,
+                                           :dump_pending,
+                                           :dump_profile,
+                                           :dump_summary
     attr_reader :output, :results, :example_group
 
     def initialize(output)
       @output = output || StringIO.new
       @results = {} 
-      # open the yml configuration file to read db connection and other properties
-      rspec_file = '.rspec'
-      file_path = nil
-      File.open(rspec_file).each do |line|
-       if (line.match('--options\s?.+yml')) # filter lines that contain path to yml file
-           line.slice!('--options ')
-           file_path = line.strip
-       end
-      end
-      if File.exists?(file_path)
-        # puts "opening the config file"
-        @config = YAML::load(File.open(file_path))
-        # @config = YAML::load(File.open('./config/rspec2db.yml')) 
-      else 
-        puts "could not find the config file at the following location"
-        puts file_path
-        abort("exiting... please check your config file")
-      end
-      
-      # ActiveRecord::Base.logger = Logger.new(File.open('database.log', 'w'))
-      ActiveRecord::Base.establish_connection(@config["dbconnection"])
-      @testrun = TestRun.create()
-      @testrun.update_attributes(
-        :test_suites_id=>nil,
-        :duration=>nil, 
-        :example_count=>nil, 
-        :failure_count=>nil, 
-        :pending_count=>nil,
-        :build=>@config["options"]["build"],
-        :computer_name=>ENV["COMPUTERNAME"])
-      @testsuite = TestSuite.find_or_create_by_suite(:suite=>@config["options"]["suite"]) 
-
+      load_config
+      establish_db_connection
     end    
     
     def insert_test_case(example)
@@ -111,11 +91,13 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
     end
 
     def print_example_failed_content(example)
-      exception = example.metadata[:execution_result][:exception]
+      print_content = ''
+      exception = example.execution_result.exception
+      return print_content if exception.backtrace.nil?
+
       backtrace_content = exception.backtrace.map { |line| backtrace_line(line) }
       backtrace_content.compact!
-
-      @snippet_extractor ||= RSpec::Core::Formatters::SnippetExtractor.new
+      @snippet_extractor ||= RSpec::Core::Formatters::HtmlSnippetExtractor.new
       snippet_content = @snippet_extractor.snippet(backtrace_content)
       snippet_content = snippet_content.sub( "class=\"offending\"", "class=\"offending\" style=\"background-color: red;\"" )
       print_content = "    <pre class=\"ruby\" style=\"background-color: #E6E6E6; border: 1px solid;\"><code>#{snippet_content}</code></pre>"
@@ -180,4 +162,40 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
     def close()
     end
 
+private
+    def load_config
+      # open the yml configuration file to read db connection and other properties
+      rspec_file = '.rspec'
+      file_path = nil
+      File.open(rspec_file).each do |line|
+       if (line.match('--options\s?.+yml')) # filter lines that contain path to yml file
+           line.slice!('--options ')
+           file_path = line.strip
+       end
+      end
+      if File.exists?(file_path)
+        # puts "opening the config file"
+        @config = YAML::load(File.open(file_path))
+        # @config = YAML::load(File.open('./config/rspec2db.yml')) 
+      else 
+        puts "could not find the config file at the following location"
+        puts file_path
+        abort("exiting... please check your config file")
+      end
+    end
+
+    def establish_db_connection
+      # ActiveRecord::Base.logger = Logger.new(File.open('database.log', 'w'))
+      ActiveRecord::Base.establish_connection(@config["dbconnection"])
+      @testrun = TestRun.create()
+      @testrun.update_attributes(
+        :test_suites_id=>nil,
+        :duration=>nil, 
+        :example_count=>nil, 
+        :failure_count=>nil, 
+        :pending_count=>nil,
+        :build=>@config["options"]["build"],
+        :computer_name=>ENV["COMPUTERNAME"])
+      @testsuite = TestSuite.find_or_create_by_suite(:suite=>@config["options"]["suite"]) 
+    end
 end
