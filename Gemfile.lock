@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    rspec2db (0.1.4)
+    rspec2db (1.0.0)
       activerecord (~> 3.2.12)
       activerecord-postgresql-adapter
       pg
