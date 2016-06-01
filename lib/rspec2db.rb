@@ -75,7 +75,7 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
 
       backtrace_content = exception.backtrace.map { |line| RSpec::Core::BacktraceFormatter.new.backtrace_line(line) }
       backtrace_content.compact!
-      @snippet_extractor ||= RSpec::Core::Formatters::HtmlSnippetExtractor.new
+      @snippet_extractor ||= RSpec::Core::Formatters::SnippetExtractor.new
       snippet_content = @snippet_extractor.snippet(backtrace_content)
       snippet_content = snippet_content.sub( "class=\"offending\"", "class=\"offending\" style=\"background-color: red;\"" )
       print_content = "    <pre class=\"ruby\" style=\"background-color: #E6E6E6; border: 1px solid;\"><code>#{snippet_content}</code></pre>"
