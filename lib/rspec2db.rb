@@ -138,31 +138,19 @@ private
       Gem.loaded_specs['rspec-core'].version.to_s.split('.').map { |v| v.to_i }
     end
 
-    def get_backtrace_line(line)
-      if @rspec_core_version[1] == 2
-        backtrace_line(line)
-      elsif @rspec_core_version[1] > 2
-        require 'rspec/core/backtrace_formatter'
-        RSpec::Core::BacktraceFormatter.new.backtrace_line(line)
-      end
-    end
-
     def create_snippet_extractor
       major_version = @rspec_core_version[0]
       minor_version = @rspec_core_version[1]
 
-      rspec_2_requirement = major_version == 2 && minor_version = 9
       rspec_3_requirement = major_version == 3 && minor_version >= 0 && minor_version <= 3
       rspec_3_4_requirement = major_version == 3 && minor_version >= 4 
 
-      if rspec_2_requirement || rspec_3_requirement
+      if rspec_3_requirement
         require 'rspec/core/formatters/snippet_extractor'
         RSpec::Core::Formatters::SnippetExtractor.new
       elsif rspec_3_4_requirement
         require 'rspec/core/formatters/html_snippet_extractor'
         RSpec::Core::Formatters::HtmlSnippetExtractor.new
-      else
-        nil
       end
     end
 
