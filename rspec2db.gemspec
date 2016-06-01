@@ -12,5 +12,5 @@ Gem::Specification.new do |s|
   s.add_dependency 'activerecord', '~>3.2.12'
   s.add_dependency 'pg' 
   s.add_dependency 'activerecord-postgresql-adapter' 
-  s.add_dependency 'rspec', '>= 3.0.0'
+  s.add_dependency 'rspec', '>= 2.9.9'
 end
