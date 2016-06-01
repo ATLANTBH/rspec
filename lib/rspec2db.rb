@@ -1,5 +1,5 @@
 require 'rspec/core/formatters/base_text_formatter'
-require 'rspec/core/formatters/html_snippet_extractor'
+require 'rspec/core/formatters/snippet_extractor'
 require 'rspec/core/backtrace_formatter'
 require 'active_record'
 require 'yaml'
