@@ -1,5 +1,4 @@
 require 'rspec/core/formatters/base_text_formatter'
-require 'rspec/core/backtrace_formatter'
 require 'active_record'
 require 'yaml'
 
@@ -40,6 +39,7 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
     def initialize(output)
       @output = output || StringIO.new
       @results = {}
+      @rspec_core_version = extract_rspec_core_version
       load_config
       establish_db_connection
     end
@@ -134,15 +134,26 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
     def seed(seed)
     end
 private
+    def extract_rspec_core_version
+      Gem.loaded_specs['rspec-core'].version.to_s.split('.').map { |v| v.to_i }
+    end
+
+    def get_backtrace_line(line)
+      if @rspec_core_version[1] == 2
+        backtrace_line(line)
+      elsif @rspec_core_version[1] > 2
+        require 'rspec/core/backtrace_formatter'
+        RSpec::Core::BacktraceFormatter.new.backtrace_line(line)
+      end
+    end
+
     def create_snippet_extractor
-      version = Gem.loaded_specs['rspec-core'].version.to_s.split('.').map { |v| v.to_i }
-      major_version = version[0]
-      minor_version = version[1]
+      major_version = @rspec_core_version[0]
+      minor_version = @rspec_core_version[1]
 
       rspec_2_requirement = major_version == 2 && minor_version = 9
       rspec_3_requirement = major_version == 3 && minor_version >= 0 && minor_version <= 3
       rspec_3_4_requirement = major_version == 3 && minor_version >= 4 
-
 
       if rspec_2_requirement || rspec_3_requirement
         require 'rspec/core/formatters/snippet_extractor'
