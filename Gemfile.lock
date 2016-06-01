@@ -5,7 +5,7 @@ PATH
       activerecord (~> 3.2.12)
       activerecord-postgresql-adapter
       pg
-      rspec (>= 3.0.0, < 3.3.0)
+      rspec (>= 3.0.0)
 
 GEM
   remote: http://rubygems.org/
@@ -29,19 +29,19 @@ GEM
     i18n (0.7.0)
     multi_json (1.12.1)
     pg (0.18.4)
-    rspec (3.2.0)
-      rspec-core (~> 3.2.0)
-      rspec-expectations (~> 3.2.0)
-      rspec-mocks (~> 3.2.0)
-    rspec-core (3.2.3)
-      rspec-support (~> 3.2.0)
-    rspec-expectations (3.2.1)
+    rspec (3.4.0)
+      rspec-core (~> 3.4.0)
+      rspec-expectations (~> 3.4.0)
+      rspec-mocks (~> 3.4.0)
+    rspec-core (3.4.4)
+      rspec-support (~> 3.4.0)
+    rspec-expectations (3.4.0)
       diff-lcs (>= 1.2.0, < 2.0)
-      rspec-support (~> 3.2.0)
-    rspec-mocks (3.2.1)
+      rspec-support (~> 3.4.0)
+    rspec-mocks (3.4.1)
       diff-lcs (>= 1.2.0, < 2.0)
-      rspec-support (~> 3.2.0)
-    rspec-support (3.2.2)
+      rspec-support (~> 3.4.0)
+    rspec-support (3.4.1)
     tzinfo (0.3.49)
 
 PLATFORMS

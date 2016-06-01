@@ -1,5 +1,4 @@
 require 'rspec/core/formatters/base_text_formatter'
-require 'rspec/core/formatters/snippet_extractor'
 require 'rspec/core/backtrace_formatter'
 require 'active_record'
 require 'yaml'
@@ -75,7 +74,8 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
 
       backtrace_content = exception.backtrace.map { |line| RSpec::Core::BacktraceFormatter.new.backtrace_line(line) }
       backtrace_content.compact!
-      @snippet_extractor ||= RSpec::Core::Formatters::SnippetExtractor.new
+      @snippet_extractor ||= create_snippet_extractor
+      
       snippet_content = @snippet_extractor.snippet(backtrace_content)
       snippet_content = snippet_content.sub( "class=\"offending\"", "class=\"offending\" style=\"background-color: red;\"" )
       print_content = "    <pre class=\"ruby\" style=\"background-color: #E6E6E6; border: 1px solid;\"><code>#{snippet_content}</code></pre>"
@@ -134,6 +134,23 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
     def seed(seed)
     end
 private
+    def create_snippet_extractor
+      version = Gem.loaded_specs['rspec-core'].version.to_s.split('.').map { |v| v.to_i }
+      major_version = version[0]
+      minor_version = version[1]
+      snippet_extractor = nil
+
+      if minor_version >= 0 && minor_version <= 3
+        require 'rspec/core/formatters/snippet_extractor'
+        snippet_extractor = RSpec::Core::Formatters::SnippetExtractor.new
+      elsif minor_version > 3
+        require 'rspec/core/formatters/html_snippet_extractor'
+        snippet_extractor = RSpec::Core::Formatters::HtmlSnippetExtractor.new
+      end
+
+      snippet_extractor
+    end
+
     def load_config
       # open the yml configuration file to read db connection and other properties
       rspec_file = '.rspec'
