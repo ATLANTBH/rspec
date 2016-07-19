@@ -32,7 +32,6 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
                                            :example_failed,
                                            :dump_failures,
                                            :dump_pending,
-                                           :dump_profile,
                                            :dump_summary
     attr_reader :output, :results, :example_group
 
