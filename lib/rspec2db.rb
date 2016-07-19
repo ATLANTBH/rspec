@@ -32,7 +32,9 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
                                            :example_failed,
                                            :dump_failures,
                                            :dump_pending,
-                                           :dump_summary
+                                           :dump_summary,
+                                           :dump_profile
+
     attr_reader :output, :results, :example_group
 
     def initialize(output)
@@ -114,6 +116,9 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
     end
 
     def dump_pending(notification)
+    end
+
+    def dump_profile(notification)
     end
 
     def dump_failures(notification)
