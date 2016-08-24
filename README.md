@@ -41,12 +41,17 @@ Ubuntu - apt-get install libpq-dev before running gem install pg -v '0.14.1'
 
 - run RSpec tests using the rspec command (from the location where .rspec file exist, to be able to pick up parameters defined in .rspec) (e.g. rspec spec/spec_spec.rb)
 
+## Retrieve results from database
+
 To retrieve test results from the database, you can use build_execution_stats.rb script which is located in “config” directory.
 To execute the script, run the following command:
-ruby config/build_execution_stats.rb <build number> <results file> <results aggregation> 
 
-- build number is a user specified integer
-- results file is name of the file in which results are written
-- results aggregation is a parameter which determines if the statistics will be calculated for a single thread or for all threads. It can take one of two values: 
-    - single - results for only one thread (the first one) will be in the results file
-    - all - results for all threads will be in the results file
+```
+ruby config/build_execution_stats.rb <build_number> <results_file> <results_aggregation> 
+```
+
+- build_number is a user specified value which needs to be the same like the one found in rspec2db.yml configuration file
+- results_file is name of the file in which results are written
+- results_aggregation is a parameter which determines if the statistics will be calculated for a single run with same build_number or for all runs with same build_number. It can take one of two values: 
+    - single - results for only one run (the first one) will be in the results file
+    - all - results for all runes will be in the results file
