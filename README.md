@@ -52,6 +52,6 @@ ruby config/build_execution_stats.rb <build_number> <results_file> <results_aggr
 
 - build_number is a user specified value which needs to be the same like the one found in rspec2db.yml configuration file
 - results_file is name of the file in which results are written
-- results_aggregation is a parameter which determines if the statistics will be calculated for a single run with same build_number or for all runs with same build_number. It can take one of two values: 
-    - single - results for only one run (the first one) will be in the results file
-    - all - results for all runes will be in the results file
+- results_aggregation is an optional parameter which determines if the statistics will be calculated for a single run with same build_number or for all runs with same build_number: 
+    - not specified - results for only one run (the first one) will be in the results file
+    - all - results for all runs will be in the results file
