@@ -48,5 +48,5 @@ ruby config/build_execution_stats.rb <build number> <results file> <results aggr
 - build number is a user specified integer
 - results file is name of the file in which results are written
 - results aggregation is a parameter which determines if the statistics will be calculated for a single thread or for all threads. It can take one of two values: 
-    - single - results for only one thread will be in the results file
+    - single - results for only one thread (the first one) will be in the results file
     - all - results for all threads will be in the results file
