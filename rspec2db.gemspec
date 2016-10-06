@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = 'rspec2db'
-  s.version     = '1.1.2'
-  s.date        = '2016-07-21'
+  s.version     = '1.1.3'
+  s.date        = '2016-10-06'
   s.summary     = "Save your RSpec test results to a database"
   s.description = "A simple RSpec formatter to enable writing RSpec test results to any database using ActiveRecord. Specify DB connection in a yml file and put path to that file as --options PATH in your .rspec file"
   s.authors     = ["Nermin Caluk", "Bakir Jusufbegovic"]
@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.homepage    = 'https://github.com/ATLANTBH/rspec'
 
   s.add_dependency 'activerecord', '~>3.2.12'
-  s.add_dependency 'pg' 
+  s.add_dependency 'pg', '~>0.18.4'
   s.add_dependency 'activerecord-postgresql-adapter' 
   s.add_dependency 'rspec', '>= 3.0.0'
 end
