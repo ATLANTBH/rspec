@@ -39,7 +39,9 @@ report << "----------------\n"
   @test_steps_count = @test_steps_count + test_run.example_count
   @test_steps_pass_count = @test_steps_pass_count + (test_run.example_count.to_i - test_run.failure_count.to_i)
   @test_steps_failed_count = @test_steps_failed_count + test_run.failure_count
-  @duration = @duration + test_run.duration
+  if test_run.duration>@duration
+    @duration = test_run.duration
+  end
   @build = test_run.build
 end
 
@@ -48,3 +50,18 @@ end
 @formatted_duration = sprintf('%.2f', @duration.to_f)
 
 File.open(ARGV[1], 'w') { |f| f.write("#{report}Build name: #{@build}\nDuration: #{@formatted_duration}s\nSuccess rate: #{@formatted_rate}%\nTest steps count: #{@test_steps_count}\nTest steps passed: #{@test_steps_pass_count}\nTest steps failed: #{@test_steps_failed_count}\n") }
+
+
+sql = "select count(tc.test_group) from test_suites ts, test_runs tr, test_cases tc where ts.id=tr.test_suites_id and tr.id=tc.test_runs_id and tr.build='#{ARGV[0]}' and ts.suite='#{ARGV[3]}' group by tc.test_group"
+number_of_scripts = TestRun.find_by_sql(sql)
+
+File.open(ARGV[1], 'a') { |f| f.puts "Number of test scripts: #{number_of_scripts.count}"}
+
+
+
+sql_failed="select count(tc.test_group) from test_suites ts, test_runs tr, test_cases tc where ts.id=tr.test_suites_id and tr.id=tc.test_runs_id and tr.build='#{ARGV[0]}' and ts.suite='#{ARGV[3]}' and tc.execution_result='failed' group by tc.test_group"
+
+number_of_failed_scripts=TestRun.find_by_sql(sql_failed)
+File.open(ARGV[1], 'a') { |f| f.puts "Number of failed scripts: #{number_of_failed_scripts.count}"}
+
+  
