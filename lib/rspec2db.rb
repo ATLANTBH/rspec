@@ -190,7 +190,9 @@ private
         :failure_count=>nil,
         :pending_count=>nil,
         :build=>@config["options"]["build"],
-        :computer_name=>ENV["COMPUTERNAME"])
+        :computer_name=>ENV["COMPUTERNAME"],
+        :git_hash=>ENV["GIT_COMMIT"],
+        :git_branch=>ENV["GIT_BRANCH"])
       @testsuite = TestSuite.find_or_create_by_suite(:suite=>@config["options"]["suite"])
     end
 end
