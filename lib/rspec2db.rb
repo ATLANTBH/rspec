@@ -124,15 +124,12 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
     def dump_failures(notification)
     end
 
-    def dump_summary(notification)#duration, example_count, failure_count, pending_count)
-       @testrun.update_attributes(
-        :test_suites_id=>@testsuite.id,
-        :duration=>notification.duration,
-        :example_count=>notification.example_count,
-        :failure_count=>notification.failure_count,
-        :pending_count=>notification.pending_count,
-        :build=>@config["options"]["build"],
-        :computer_name=>ENV["COMPUTERNAME"])
+    def dump_summary(notification)
+       @testrun.increment(:example_count, notification.example_count)
+               .increment(:failure_count, notification.failure_count)
+               .increment(:pending_count, notification.pending_count)
+               .increment(:duration, notification.duration)
+               .save!
     end
 
     def seed(seed)
@@ -180,19 +177,19 @@ private
     end
 
     def establish_db_connection
-      # ActiveRecord::Base.logger = Logger.new(File.open('database.log', 'w'))
       ActiveRecord::Base.establish_connection(@config["dbconnection"])
-      @testrun = TestRun.create()
-      @testrun.update_attributes(
-        :test_suites_id=>nil,
-        :duration=>nil,
-        :example_count=>nil,
-        :failure_count=>nil,
-        :pending_count=>nil,
-        :build=>@config["options"]["build"],
-        :computer_name=>ENV["COMPUTERNAME"],
-        :git_hash=>ENV["GIT_COMMIT"],
-        :git_branch=>ENV["GIT_BRANCH"])
+
+      # Find or create test suite
       @testsuite = TestSuite.find_or_create_by_suite(:suite=>@config["options"]["suite"])
+
+      test_run_hash = {
+        :build=>@config["options"]["build"],
+        :test_suites_id=>@testsuite.id,
+        :git_hash=>ENV["GIT_COMMIT"],
+        :git_branch=>ENV["GIT_BRANCH"]
+      }
+
+      # Find or create test run
+      @testrun = TestRun.where(test_run_hash).first || TestRun.create(test_run_hash)
     end
 end
