@@ -35,12 +35,13 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
                                            :dump_summary,
                                            :dump_profile
 
-    attr_reader :output, :results, :example_group
+    attr_reader :output, :results, :example_group, :global_file_lock
 
     def initialize(output)
       @output = output || StringIO.new
       @results = {}
       @rspec_core_version = extract_rspec_core_version
+      @global_file_lock = '/tmp/rspec2db.lock'
       load_config
       establish_db_connection
     end
@@ -125,11 +126,26 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
     end
 
     def dump_summary(notification)
-       @testrun.increment(:example_count, notification.example_count)
-               .increment(:failure_count, notification.failure_count)
-               .increment(:pending_count, notification.pending_count)
-               .increment(:duration, notification.duration)
-               .save!
+      @global_lock = File.new(@global_file_lock, File::CREAT | File::TRUNC)
+      begin
+        @global_lock.flock(File::LOCK_EX)
+        #@testrun.increment(:example_count, notification.example_count)
+        #       .increment(:failure_count, notification.failure_count)
+        #       .increment(:pending_count, notification.pending_count)
+        #       .increment(:duration, notification.duration)
+        #       .save!
+        @testrun.update_attributes(
+          :duration=>notification.duration,
+          :example_count=>notification.example_count,
+          :failure_count=>notification.failure_count,
+          :pending_count=>notification.pending_count)
+        @global_lock.flock(File::LOCK_UN)
+      rescue Exception => e
+        puts e.message
+        puts e.backtrace
+      ensure
+        @global_lock.flock(File::LOCK_UN)
+      end
     end
 
     def seed(seed)
@@ -190,6 +206,17 @@ private
       }
 
       # Find or create test run
-      @testrun = TestRun.where(test_run_hash).first || TestRun.create(test_run_hash)
+      @global_lock = File.new(@global_file_lock, File::CREAT | File::TRUNC)
+
+      begin
+        @global_lock.flock(File::LOCK_EX)
+        @testrun = TestRun.where(test_run_hash).first || TestRun.create(test_run_hash)
+        @global_lock.flock(File::LOCK_UN)
+      rescue Exception => e
+        puts e.message
+        puts e.backtrace
+      ensure
+        @global_lock.flock(File::LOCK_UN)
+      end
     end
 end
