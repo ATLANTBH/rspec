@@ -35,12 +35,13 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
                                            :dump_summary,
                                            :dump_profile
 
-    attr_reader :output, :results, :example_group
+    attr_reader :output, :results, :example_group, :global_file_lock
 
     def initialize(output)
       @output = output || StringIO.new
       @results = {}
       @rspec_core_version = extract_rspec_core_version
+      @global_file_lock = '/tmp/rspec2db.lock'
       load_config
       establish_db_connection
     end
@@ -58,8 +59,8 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
       if @config["options"]["backtrace"] && !example.execution_result.exception.nil?  && !example.execution_result.exception.backtrace.nil?
          File.open('/tmp/output', 'w'){ |w| w.write(example.execution_result.exception.backtrace) }
          @testcase.update_attributes(
-         :backtrace=> example.execution_result.exception.backtrace.join('\n'),
-         :metadata=>print_example_failed_content(example)
+           :backtrace=> example.execution_result.exception.backtrace.join('\n'),
+           :metadata=>print_example_failed_content(example)
          )
       end
       if !example_group.top_level? # check for detecting Context (as opposed to Describe group)
@@ -124,15 +125,24 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
     def dump_failures(notification)
     end
 
-    def dump_summary(notification)#duration, example_count, failure_count, pending_count)
-       @testrun.update_attributes(
-        :test_suites_id=>@testsuite.id,
-        :duration=>notification.duration,
-        :example_count=>notification.example_count,
-        :failure_count=>notification.failure_count,
-        :pending_count=>notification.pending_count,
-        :build=>@config["options"]["build"],
-        :computer_name=>ENV["COMPUTERNAME"])
+    def dump_summary(notification)
+      @global_lock = File.new(@global_file_lock, File::CREAT | File::TRUNC)
+      begin
+        @global_lock.flock(File::LOCK_EX)
+        # Reload counters from database to get correct increment when running tests in parallel
+        @testrun.reload
+        @testrun.increment(:example_count, notification.example_count)
+               .increment(:failure_count, notification.failure_count)
+               .increment(:pending_count, notification.pending_count)
+               .increment(:duration, notification.duration)
+               .save!
+        @global_lock.flock(File::LOCK_UN)
+      rescue Exception => e
+        puts e.message
+        puts e.backtrace
+      ensure
+        @global_lock.flock(File::LOCK_UN)
+      end
     end
 
     def seed(seed)
@@ -180,17 +190,30 @@ private
     end
 
     def establish_db_connection
-      # ActiveRecord::Base.logger = Logger.new(File.open('database.log', 'w'))
       ActiveRecord::Base.establish_connection(@config["dbconnection"])
-      @testrun = TestRun.create()
-      @testrun.update_attributes(
-        :test_suites_id=>nil,
-        :duration=>nil,
-        :example_count=>nil,
-        :failure_count=>nil,
-        :pending_count=>nil,
-        :build=>@config["options"]["build"],
-        :computer_name=>ENV["COMPUTERNAME"])
+
+      # Find or create test suite
       @testsuite = TestSuite.find_or_create_by_suite(:suite=>@config["options"]["suite"])
+
+      test_run_hash = {
+        :build=>@config["options"]["build"],
+        :test_suites_id=>@testsuite.id,
+        :git_hash=>ENV["GIT_COMMIT"],
+        :git_branch=>ENV["GIT_BRANCH"]
+      }
+
+      # Find or create test run
+      @global_lock = File.new(@global_file_lock, File::CREAT | File::TRUNC)
+
+      begin
+        @global_lock.flock(File::LOCK_EX)
+        @testrun = TestRun.where(test_run_hash).first || TestRun.create(test_run_hash)
+        @global_lock.flock(File::LOCK_UN)
+      rescue Exception => e
+        puts e.message
+        puts e.backtrace
+      ensure
+        @global_lock.flock(File::LOCK_UN)
+      end
     end
 end

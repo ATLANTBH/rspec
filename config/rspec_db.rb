@@ -19,6 +19,8 @@ ActiveRecord::Base.transaction do
     t.integer :pending_count
     t.string :build
     t.string :computer_name
+    t.string :git_hash
+    t.string :git_branch
     t.timestamps
 	t.references :test_suites
   end
