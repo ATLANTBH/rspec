@@ -59,8 +59,8 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
       if @config["options"]["backtrace"] && !example.execution_result.exception.nil?  && !example.execution_result.exception.backtrace.nil?
          File.open('/tmp/output', 'w'){ |w| w.write(example.execution_result.exception.backtrace) }
          @testcase.update_attributes(
-         :backtrace=> example.execution_result.exception.backtrace.join('\n'),
-         :metadata=>print_example_failed_content(example)
+           :backtrace=> example.execution_result.exception.backtrace.join('\n'),
+           :metadata=>print_example_failed_content(example)
          )
       end
       if !example_group.top_level? # check for detecting Context (as opposed to Describe group)
@@ -129,16 +129,13 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
       @global_lock = File.new(@global_file_lock, File::CREAT | File::TRUNC)
       begin
         @global_lock.flock(File::LOCK_EX)
-        #@testrun.increment(:example_count, notification.example_count)
-        #       .increment(:failure_count, notification.failure_count)
-        #       .increment(:pending_count, notification.pending_count)
-        #       .increment(:duration, notification.duration)
-        #       .save!
-        @testrun.update_attributes(
-          :duration=>notification.duration,
-          :example_count=>notification.example_count,
-          :failure_count=>notification.failure_count,
-          :pending_count=>notification.pending_count)
+        # Reload counters from database to get correct increment when running tests in parallel
+        @testrun.reload
+        @testrun.increment(:example_count, notification.example_count)
+               .increment(:failure_count, notification.failure_count)
+               .increment(:pending_count, notification.pending_count)
+               .increment(:duration, notification.duration)
+               .save!
         @global_lock.flock(File::LOCK_UN)
       rescue Exception => e
         puts e.message
