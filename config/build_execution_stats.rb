@@ -36,6 +36,7 @@ report << "----------------\n"
 @test_steps_pass_count = 0
 @test_steps_failed_count = 0
 @duration = 0
+@test_run_id = 0
 
 @test_runs = TestRun.find_by_sql(@query)
 @test_runs.each do |test_run|
