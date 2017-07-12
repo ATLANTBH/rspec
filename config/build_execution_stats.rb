@@ -13,12 +13,16 @@ dbconfig = YAML.load(File.open('./config/rspec2db.yml'))
 ActiveRecord::Base.establish_connection(dbconfig['dbconnection'])
 
 build_id = ARGV[0]
+file_name = ARGV[1]
+retrieve_limit = ARGV[2]
+test_suite_name = ARGV[3]
+test_reporter_url = ARGV[4]
 suite_name = dbconfig['options']['suite']
 
-if ARGV[2] == nil
-  @query = "select * from test_runs tr, test_suites ts where ts.id = tr.test_suites_id and tr.build LIKE '#{build_id}' and ts.suite LIKE '#{suite_name}' order by tr.created_at desc limit 1"
-elsif ARGV[2] == 'all'
-  @query = "select * from test_runs tr, test_suites ts where ts.id = tr.test_suites_id and tr.build LIKE '#{build_id}' and ts.suite LIKE '#{suite_name}' order by tr.created_at desc"
+if retrieve_limit == nil
+  @query = "select tr.* from test_runs tr, test_suites ts where ts.id = tr.test_suites_id and tr.build LIKE '#{build_id}' and ts.suite LIKE '#{suite_name}' order by tr.created_at desc limit 1"
+elsif retrieve_limit == 'all'
+  @query = "select tr.* from test_runs tr, test_suites ts where ts.id = tr.test_suites_id and tr.build LIKE '#{build_id}' and ts.suite LIKE '#{suite_name}' order by tr.created_at desc"
 else 
   raise Exception, 'Invalid parameter value.'
 end
@@ -43,25 +47,21 @@ report << "----------------\n"
     @duration = test_run.duration
   end
   @build = test_run.build
+  @test_run_id = test_run.id
 end
 
 @rate = ( @test_steps_pass_count.to_f / @test_steps_count.to_f ) * 100
 @formatted_rate = sprintf('%.2f', @rate.to_f)
 @formatted_duration = sprintf('%.2f', @duration.to_f)
 
-File.open(ARGV[1], 'w') { |f| f.write("#{report}Build name: #{@build}\nDuration: #{@formatted_duration}s\nSuccess rate: #{@formatted_rate}%\nTest steps count: #{@test_steps_count}\nTest steps passed: #{@test_steps_pass_count}\nTest steps failed: #{@test_steps_failed_count}\n") }
+File.open(file_name, 'w') { |f| f.write("#{report}Build name: #{@build}\nDuration: #{@formatted_duration}s\nSuccess rate: #{@formatted_rate}%\nTest steps count: #{@test_steps_count}\nTest steps passed: #{@test_steps_pass_count}\nTest steps failed: #{@test_steps_failed_count}\nTest reporter page: #{test_reporter_url}/test-runs/#{@test_run_id}/test-cases\n") }
 
-
-sql = "select count(tc.test_group) from test_suites ts, test_runs tr, test_cases tc where ts.id=tr.test_suites_id and tr.id=tc.test_runs_id and tr.build='#{ARGV[0]}' and ts.suite='#{ARGV[3]}' group by tc.test_group"
+sql = "select count(tc.test_group) from test_suites ts, test_runs tr, test_cases tc where ts.id=tr.test_suites_id and tr.id=tc.test_runs_id and tr.build='#{build_id}' and ts.suite='#{test_suite_name}' group by tc.test_group"
 number_of_scripts = TestRun.find_by_sql(sql)
 
-File.open(ARGV[1], 'a') { |f| f.puts "Number of test scripts: #{number_of_scripts.count}"}
+File.open(file_name, 'a') { |f| f.puts "Number of test scripts: #{number_of_scripts.count}"}
 
-
-
-sql_failed="select count(tc.test_group) from test_suites ts, test_runs tr, test_cases tc where ts.id=tr.test_suites_id and tr.id=tc.test_runs_id and tr.build='#{ARGV[0]}' and ts.suite='#{ARGV[3]}' and tc.execution_result='failed' group by tc.test_group"
+sql_failed="select count(tc.test_group) from test_suites ts, test_runs tr, test_cases tc where ts.id=tr.test_suites_id and tr.id=tc.test_runs_id and tr.build='#{build_id}' and ts.suite='#{test_suite_name}' and tc.execution_result='failed' group by tc.test_group"
 
 number_of_failed_scripts=TestRun.find_by_sql(sql_failed)
-File.open(ARGV[1], 'a') { |f| f.puts "Number of failed scripts: #{number_of_failed_scripts.count}"}
-
-  
+File.open(file_name, 'a') { |f| f.puts "Number of failed scripts: #{number_of_failed_scripts.count}"}
