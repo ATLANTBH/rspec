@@ -129,12 +129,13 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
       @global_lock = File.new(@global_file_lock, File::CREAT | File::TRUNC)
       begin
         @global_lock.flock(File::LOCK_EX)
+        @testrun.increment(:duration, notification.duration)
         # Reload counters from database to get correct increment when running tests in parallel
+        # Will not reload duration since duration should be the time of the slowest process running in parallel not sum of all of them
         @testrun.reload
         @testrun.increment(:example_count, notification.example_count)
                .increment(:failure_count, notification.failure_count)
                .increment(:pending_count, notification.pending_count)
-               .increment(:duration, notification.duration)
                .save!
         @global_lock.flock(File::LOCK_UN)
       rescue Exception => e
