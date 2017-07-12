@@ -47,11 +47,18 @@ To retrieve test results from the database, you can use build_execution_stats.rb
 To execute the script, run the following command:
 
 ```
-ruby config/build_execution_stats.rb <build_number> <results_file> <results_aggregation> 
+ruby config/build_execution_stats.rb <build_number> <results_file>
+```
+
+To execute the script with all optional parameters, run the following command:
+```
+ruby config/build_execution_stats.rb <build_number> <results_file>
+ <results_aggregation> <test_reporter_url>
 ```
 
 - build_number is a user specified value which needs to be the same like the one found in rspec2db.yml configuration file
 - results_file is name of the file in which results are written
-- results_aggregation is an optional parameter which determines if the statistics will be calculated for a single run with same build_number or for all runs with same build_number: 
+- results_aggregation (optional) determines if the statistics will be calculated for a single run with same build_number or for all runs with same build_number: 
     - not specified - results for only one run (the first one) will be in the results file
     - all - results for all runs will be in the results file
+- test_reporter_url (optional) is the url of the Test Reporter tool which can be used in conjunction with rspec2db gem. If you use this parameter, you need to specify base url of your Test Reporter instance (for example: http://testreporter:8080). Based on this url, script will generate exact url path to this specific run which contains list of tests that have been executed
