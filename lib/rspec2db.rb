@@ -192,20 +192,20 @@ private
     def establish_db_connection
       ActiveRecord::Base.establish_connection(@config["dbconnection"])
 
-      # Find or create test suite
-      @testsuite = TestSuite.find_or_create_by_suite(:suite=>@config["options"]["suite"])
-
-      test_run_hash = {
-        :build=>@config["options"]["build"],
-        :test_suites_id=>@testsuite.id,
-        :git_hash=>ENV["GIT_COMMIT"],
-        :git_branch=>ENV["GIT_BRANCH"]
-      }
-
       # Find or create test run
       @global_lock = File.new(@global_file_lock, File::CREAT | File::TRUNC)
 
       begin
+        # Find or create test suite
+        @testsuite = TestSuite.find_or_create_by_suite(:suite=>@config["options"]["suite"])
+
+        test_run_hash = {
+          :build=>@config["options"]["build"],
+          :test_suites_id=>@testsuite.id,
+          :git_hash=>ENV["GIT_COMMIT"],
+          :git_branch=>ENV["GIT_BRANCH"]
+        }
+
         @global_lock.flock(File::LOCK_EX)
         @testrun = TestRun.where(test_run_hash).first || TestRun.create(test_run_hash)
         @global_lock.flock(File::LOCK_UN)
