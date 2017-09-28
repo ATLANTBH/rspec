@@ -193,7 +193,7 @@ private
       ActiveRecord::Base.establish_connection(@config["dbconnection"])
 
       # Find or create test suite
-      @testsuite = TestSuite.find_or_create_by_suite(:suite=>@config["options"]["suite"])
+      @testsuite = TestSuite.find_or_create_by(:suite=>@config["options"]["suite"])
 
       test_run_hash = {
         :build=>@config["options"]["build"],
