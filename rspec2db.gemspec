@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.files       = ["lib/rspec2db.rb"]
   s.homepage    = 'https://github.com/ATLANTBH/rspec'
 
-  s.add_dependency 'activerecord', '~>3.2.12'
+  s.add_dependency 'activerecord', '~> 5.1.3'
   s.add_dependency 'pg', '~>0.18.4'
   s.add_dependency 'activerecord-postgresql-adapter' 
   s.add_dependency 'rspec', '>= 3.0.0'
