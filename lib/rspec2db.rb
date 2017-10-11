@@ -157,7 +157,7 @@ private
       minor_version = @rspec_core_version[1]
 
       rspec_3_requirement = major_version == 3 && minor_version >= 0 && minor_version <= 3
-      rspec_3_4_requirement = major_version == 3 && minor_version >= 4 
+      rspec_3_4_requirement = major_version == 3 && minor_version >= 4
 
       if rspec_3_requirement
         require 'rspec/core/formatters/snippet_extractor'
@@ -187,6 +187,18 @@ private
         puts file_path
         abort("exiting... please check your config file")
       end
+
+      override_default_config
+    end
+
+    def override_default_config
+      @config["options"].each do |key, value|
+        @config["options"][key] = ENV[key.upcase] unless ENV[key.upcase].nil?
+      end
+
+      @config["dbconnection"].each do |key, value|
+        @config["dbconnection"][key] = ENV[key.upcase] unless ENV[key.upcase].nil?
+      end
     end
 
     def establish_db_connection
@@ -198,8 +210,8 @@ private
       test_run_hash = {
         :build=>@config["options"]["build"],
         :test_suites_id=>@testsuite.id,
-        :git_hash=>ENV["GIT_COMMIT"],
-        :git_branch=>ENV["GIT_BRANCH"]
+        :git_hash=>@config["options"]["git_hash"],
+        :git_branch=>@config["options"]["git_branch"]
       }
 
       # Find or create test run

@@ -1,7 +1,9 @@
 options:
-  suite: "full regression" #this can be used in a setup where multiple projects share the same test results database 
+  suite: "full regression" #this can be used in a setup where multiple projects share the same test results database
   build: "12345" #
   backtrace: false #set backtrace to true for more details and metadata
+  git_commit:
+  git_branch: 
 dbconnection:
   adapter: postgresql
   database:  rspec
