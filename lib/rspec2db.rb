@@ -120,11 +120,11 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
     end
 
     def screenshot_saved(notification)
-      update_test_case(screenshot_path: notification)
+      update_test_case(screenshot_path: notification[:screenshot_path])
     end
 
     def screenshot_uploaded(notification)
-      update_test_case(screenshot_url: notification)
+      update_test_case(screenshot_url: notification[:screenshot_url])
     end
 
     def start_dump(notification)
