@@ -5,7 +5,7 @@ Database Formatter enables writing RSpec test results into database.
 
 Installation steps:
 
-- Install postgres database 
+- Install postgres database
 
 - git clone this (rspec) repository
 
@@ -41,6 +41,36 @@ Ubuntu - apt-get install libpq-dev before running gem install pg -v '0.14.1'
 
 - run RSpec tests using the rspec command (from the location where .rspec file exist, to be able to pick up parameters defined in .rspec) (e.g. rspec spec/spec_spec.rb)
 
+## Custom screenshot events
+
+rspec2db supports two custom events: *screenshot_saved* and *screenshot_uploaded*. These events are used to store screenshot paths and urls of failed test cases (examples).
+
+Before using the custom events, the database has to be prepared by executing the following command from the `config` directory:
+
+```
+ruby rspec_db_migrations.rb
+```
+
+The custom events are triggered using the default RSpec Reporter, and can be triggered at any point, however, they should be used in conjunction with Selenium libraries (Watir or Capybara), ie.
+
+```
+it 'take screenshot' do
+  browser.screenshot.save screenshot_path # Save screenshot to local filesystem using Watir browser method
+  rspec_reporter = RSpec.configuration.reporter # Get the default reporter
+  rspec_reporter.publish(:screenshot_saved, screenshot_path: screenshot_name)
+end
+```
+
+Similarly, screenshot urls (e.g. S3 link of an uploaded screenshot) can be saved like:
+
+```
+it 'upload screenshot' do
+  screenshot_url = example_external_service.upload_screenshot # Get a screenshot URL from an external service
+  rspec_reporter = RSpec.configuration.reporter # Get the default reporter
+  rspec_reporter.publish(:screenshot_uploaded, screenshot_url: screenshot_url)
+end
+```
+
 ## Retrieve results from database
 
 To retrieve test results from the database, you can use build_execution_stats.rb script which is located in “config” directory.
@@ -58,7 +88,7 @@ ruby config/build_execution_stats.rb <build_number> <results_file>
 
 - build_number is a user specified value which needs to be the same like the one found in rspec2db.yml configuration file
 - results_file is name of the file in which results are written
-- results_aggregation (optional) determines if the statistics will be calculated for a single run with same build_number or for all runs with same build_number: 
+- results_aggregation (optional) determines if the statistics will be calculated for a single run with same build_number or for all runs with same build_number:
     - not specified - results for only one run (the first one) will be in the results file
     - all - results for all runs will be in the results file
 - test_reporter_url (optional) is the url of the Test Reporter tool which can be used in conjunction with rspec2db gem. If you use this parameter, you need to specify base url of your Test Reporter instance (for example: http://testreporter:8080). Based on this url, script will generate exact url path to this specific run which contains list of tests that have been executed
