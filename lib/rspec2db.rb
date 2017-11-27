@@ -33,7 +33,9 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
                                            :dump_failures,
                                            :dump_pending,
                                            :dump_summary,
-                                           :dump_profile
+                                           :dump_profile,
+                                           :screenshot_saved,
+                                           :screenshot_uploaded
 
     attr_reader :output, :results, :example_group, :global_file_lock
 
@@ -44,6 +46,10 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
       @global_file_lock = '/tmp/rspec2db.lock'
       load_config
       establish_db_connection
+    end
+
+    def update_test_case(notification)
+      @testcase.update_attributes(notification)
     end
 
     def insert_test_case(notification)
@@ -113,6 +119,14 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
       @message=notification.message
     end
 
+    def screenshot_saved(notification)
+      update_test_case(screenshot_path: notification.screenshot_path)
+    end
+
+    def screenshot_uploaded(notification)
+      update_test_case(screenshot_url: notification.screenshot_url)
+    end
+
     def start_dump(notification)
     end
 
@@ -157,7 +171,7 @@ private
       minor_version = @rspec_core_version[1]
 
       rspec_3_requirement = major_version == 3 && minor_version >= 0 && minor_version <= 3
-      rspec_3_4_requirement = major_version == 3 && minor_version >= 4 
+      rspec_3_4_requirement = major_version == 3 && minor_version >= 4
 
       if rspec_3_requirement
         require 'rspec/core/formatters/snippet_extractor'
@@ -187,6 +201,11 @@ private
         puts file_path
         abort("exiting... please check your config file")
       end
+    end
+
+    def create_file_uploader
+      file_uploader_options = @config[:image_storage]
+      FileUploader.new
     end
 
     def establish_db_connection
