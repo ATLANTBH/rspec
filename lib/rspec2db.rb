@@ -49,7 +49,7 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
     end
 
     def update_test_case(notification)
-      @testcase.update_attributes(notification)
+      @testcase.update_attributes(notification) unless @testcase.nil?
     end
 
     def insert_test_case(notification)
@@ -120,11 +120,11 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
     end
 
     def screenshot_saved(notification)
-      update_test_case(screenshot_path: notification.screenshot_path)
+      update_test_case(screenshot_path: notification)
     end
 
     def screenshot_uploaded(notification)
-      update_test_case(screenshot_url: notification.screenshot_url)
+      update_test_case(screenshot_url: notification)
     end
 
     def start_dump(notification)
