@@ -44,12 +44,13 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
       @results = {}
       @rspec_core_version = extract_rspec_core_version
       @global_file_lock = '/tmp/rspec2db.lock'
+      @screenshot_event = {}
       load_config
       establish_db_connection
     end
 
-    def update_test_case(notification)
-      @testcase.update_attributes(notification) unless @testcase.nil?
+    def handle_screenshot_event(notification)
+      @screenshot_event.merge! notification
     end
 
     def insert_test_case(notification)
@@ -72,6 +73,11 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
       if !example_group.top_level? # check for detecting Context (as opposed to Describe group)
         @testcase.update_attributes(
           :context=>@example_group.description)
+      end
+      if !@screenshot_event[:example] && @screenshot_event[:example] == example.top_level_description
+        @screenshot_event.delete :example
+        @testcase.update_attributes @screenshot_event
+        @screenshot_event = {}
       end
     end
 
@@ -120,11 +126,11 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
     end
 
     def screenshot_saved(notification)
-      update_test_case(screenshot_path: notification[:screenshot_path])
+      handle_screenshot_event(notification.to_h)
     end
 
     def screenshot_uploaded(notification)
-      update_test_case(screenshot_url: notification[:screenshot_url])
+      update_test_case(notification.to_h)
     end
 
     def start_dump(notification)
