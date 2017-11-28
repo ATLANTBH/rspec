@@ -74,7 +74,7 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
         @testcase.update_attributes(
           :context=>@example_group.description)
       end
-      if !@screenshot_event[:example] && @screenshot_event[:example] == example.top_level_description
+      if @screenshot_event[:example] && @screenshot_event[:example] == example.description
         @screenshot_event.delete :example
         @testcase.update_attributes @screenshot_event
         @screenshot_event = {}
@@ -130,7 +130,7 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
     end
 
     def screenshot_uploaded(notification)
-      update_test_case(notification.to_h)
+      handle_screenshot_event(notification.to_h)
     end
 
     def start_dump(notification)
