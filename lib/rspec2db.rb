@@ -126,11 +126,17 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
     end
 
     def screenshot_saved(notification)
-      handle_screenshot_event(notification.to_h)
+      handle_screenshot_event(
+        :screenshot_path => notification[:screenshot_path],
+        :example => notification[:example]
+      )
     end
 
     def screenshot_uploaded(notification)
-      handle_screenshot_event(notification.to_h)
+      handle_screenshot_event(
+        :screenshot_url => notification[:screenshot_url],
+        :example => notification[:example]
+      )
     end
 
     def start_dump(notification)
