@@ -1,0 +1,125 @@
+#!/usr/bin/env ruby
+require 'optparse'
+require 'yaml'
+require 'fileutils'
+require 'pry'
+require 'pry-nav'
+require './lib/rspec2db/db/schema'
+require './lib/rspec2db/db/build_execution_stats'
+require './lib/rspec2db/utils/rspec_configuration_helper'
+require 'pry'
+require 'pry-nav'
+
+def parse_extract_command
+  options = {}
+  extract_options = OptionParser.new do |opts|
+    opts.on('-i id', '--id=id', 'rspec2db test build id') do |id|
+      options[:id] = id
+    end
+
+    opts.on('-o file', '--output file', 'rspec2db extract output file') do |f|
+      options[:file] = f
+    end
+
+    opts.on('-l [LIMIT]', '--limit [LIMIT]', 'rspec2db number of extracted test runs') do |l|
+      options[:limit] == l || nil
+    end
+
+    opts.on('-s suite', '--suite suite', 'rspec2db test suite') do |suite|
+      options[:suite] = suite
+    end
+
+    opts.on('-U [url]' '--URL [url]', 'Test Reporter (www.github.com/ATLANTBH/owl) url link') do |url|
+      options[:url] = url
+    end
+  end
+  extract_options.parse!
+  options
+end
+
+def parse_options(load_local = true)
+  options = {}
+  required_options = ['username', 'password', 'host', 'port', 'database']
+
+  option_parser = OptionParser.new do |opts|
+    opts.banner = "Usage: rspec2db [options] <command>\n" + \
+                  "\ninit    - initialize rspec2db config file (" + ENV['HOME'] + "/.rspec2db.yaml)" \
+                  "\ncreate  - creates rspec2db database" + \
+                  "\nmigrate - migrates rspec2db database" + \
+                  "\nextract - extracts test run execution based on test run id" + \
+                  "\n\nOptions:"
+
+    opts.on('-H h', '--host=h', 'rspec2db database host') do |h|
+      options[:host] = h
+    end
+
+    opts.on('-p port', '--port=port', 'rspec2db database port') do |port|
+      options[:port] = port
+    end
+
+    opts.on('-d db', '--database=db', 'rspec2db database name') do |db|
+      options[:database] = db
+    end
+
+    opts.on('-u u', '--username=u', 'rspec2db database username') do |u|
+      options[:username] = u
+    end
+
+    opts.on('-w pw', '--password=pw', 'rspec2db database user password') do |pw|
+      options[:password] = pw
+    end
+
+    opts.on('-a ad', '--adapter=ad', 'rspec2db database adapter') do |ad|
+      options[:adapter] = ad
+    end
+
+    opts.on('-h', '--help', 'rspec2db help') do |h|
+      options[:help] = h
+    end
+  end
+  option_parser.parse!
+
+  return [options, option_parser] unless load_local
+
+  if options.empty?
+    puts 'Loading default rspec2db configuration.'
+    options = RSpecConfigurationHelper.load_local_config
+  end
+
+  missing_options = required_options - options.keys.map { |k| k.to_s }
+  abort 'Missing required options: ' + missing_options.reduce { |m, k| m + ', ' + k } unless missing_options.empty?
+
+  options[:adapter] = 'postgresql' if options[:adapter].nil?
+
+  [options, option_parser]
+end
+
+options, option_parser = parse_options(false)
+
+if options[:help]
+  puts option_parser
+  exit
+end
+
+command = ARGV[0]
+case command
+when 'init'
+  options = RSpecConfigurationHelper.check_rspec_options
+  puts 'No .rspec file found in working directory' if options.nil?
+when 'create'
+  options, option_parser = parse_options
+  DBUtils.create_rspec_db options
+when 'migrate'
+  options, option_parser = parse_options
+  DBUtils.migrate_rspec_db options
+when 'build-stats'
+  options, option_parser = parse_options
+  build_options = parse_extract_command
+  DBUtils.build_stats build_options[:id], build_options[:file], build_options[:limit], build_options[:suite], options, build_options[:url]
+when nil
+  puts 'No command provided'
+  puts option_parser
+else
+  puts 'Command unknown.'
+  puts option_parser
+end

@@ -1,0 +1,85 @@
+require './lib/rspec2db/models/test_case'
+require './lib/rspec2db/models/test_run'
+require './lib/rspec2db/models/test_suite'
+require './lib/rspec2db/db/build_execution_stats'
+require './lib/rspec2db/utils/rspec_configuration_helper'
+
+module DBUtils
+  include RSpecConfigurationHelper
+
+  def connect_to_db(config)
+    ActiveRecord::Base.establish_connection(config['dbconnection'])
+  end
+
+  def create_test_suite(config)
+    test_suite = TestSuite.find_or_create_by_suite(suite: config['options']['suite'])
+  end
+
+  def create_test_run(test_suite, global_file_lock = '/tmp/.rspec2db.yaml')
+    test_run_hash = {
+      build: config['options']['build'],
+      test_suites_id: test_suite.id,
+      git_hash: config['GIT_COMMIT'],
+      git_branch: config['GIT_BRANCH']
+    }
+    global_lock = File.new(global_file_lock, File::CREAT | File::TRUNC)
+
+    begin
+      global_lock.flock(File::LOCK_EX)
+      test_run = TestRun.where(test_run_hash).first || TestRun.create(test_run_hash)
+      global_lock.flock(File::LOCK_UN)
+    rescue Exception => e
+      puts e.message
+      puts e.backtrace
+    ensure
+      global_lock.flock(File::LOCK_UN)
+    end
+    test_run
+  end
+
+  def create_test_case(test_run, example_group, example, backtrace = nil)
+    example
+    test_case = TestCase.create(
+      test_runs_id: test_run.id,
+      test_group: example_group.top_level_description,
+      description: example.description,
+      execution_result: example.execution_result.status,
+      duration: example.execution_result.run_time,
+      pending_message: example.execution_result.pending_message.to_s,
+      exception: example.execution_result.exception.to_s)
+
+    if backtrace && !example.execution_result.exception.nil?  && !example.execution_result.exception.backtrace.nil?
+       File.open('/tmp/output', 'w'){ |w| w.write(example.execution_result.exception.backtrace) }
+       test_case.update_attributes(
+         backtrace: example.execution_result.exception.backtrace.join('\n'),
+         metadata: print_example_failed_content(example)
+       )
+    end
+
+    if !example_group.top_level? # check for detecting Context (as opposed to Describe group)
+      test_case.update_attributes(
+        context: example_group.description
+      )
+    end
+    test_case
+  end
+
+  def update_test_run(test_run, summary, global_file_lock = nil)
+    global_lock = File.new(global_file_lock, File::CREAT | File::TRUNC)
+    begin
+      global_lock.flock(File::LOCK_EX)
+      test_run.reload
+      test_run.increment(:example_count, summary.example_count)
+             .increment(:failure_count, summary.failure_count)
+             .increment(:pending_count, summary.pending_count)
+             .increment(:duration, summary.duration)
+             .save!
+      global_lock.flock(File::LOCK_UN)
+    rescue Exception => e
+      puts e.message
+      puts e.backtrace
+    ensure
+      global_lock.flock(File::LOCK_UN)
+    end
+  end
+end
