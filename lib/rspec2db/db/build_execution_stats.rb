@@ -1,7 +1,6 @@
 require 'rubygems'
 require 'yaml'
 require 'active_record'
-require './lib/rspec2db/models/test_run'
 
 module DBUtils
   def self.build_stats(build_id, file_name, limit, suite, config, reporter_url = 'http://localhost/')

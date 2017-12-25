@@ -1,4 +1,5 @@
 --format Rspec2db
---options TEST
---options ./config/rspec2db.yml
---options LOCAL
+--options TEST--format Rspec2db
+--options /Users/adnan/.rspec2db.yaml
+--format Rspec2db
+--options /Users/adnan/.rspec2db.yaml

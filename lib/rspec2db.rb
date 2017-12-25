@@ -1,8 +1,8 @@
 require 'rspec/core/formatters/base_text_formatter'
 require 'active_record'
 require 'yaml'
-require './lib/rspec2db/utils/db_utils'
-require './lib/rspec2db/utils/rspec_configuration_helper'
+require_relative './rspec2db/utils/db_utils'
+require_relative './rspec2db/utils/rspec_configuration_helper'
 
 class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
   include DBUtils

@@ -1,6 +1,3 @@
-require 'pry'
-require 'pry-nav'
-
 module RSpecConfigurationHelper
   def self.load_config(failsafe = true)
     rspec_file = '.rspec'

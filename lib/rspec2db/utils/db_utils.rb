@@ -1,8 +1,9 @@
-require './lib/rspec2db/models/test_case'
-require './lib/rspec2db/models/test_run'
-require './lib/rspec2db/models/test_suite'
-require './lib/rspec2db/db/build_execution_stats'
-require './lib/rspec2db/utils/rspec_configuration_helper'
+require 'active_record'
+require_relative 'rspec_configuration_helper'
+require_relative '../db/schema.rb'
+require_relative '../models/test_case'
+require_relative '../models/test_run'
+require_relative '../models/test_suite'
 
 module DBUtils
   include RSpecConfigurationHelper
