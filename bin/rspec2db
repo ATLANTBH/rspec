@@ -32,7 +32,7 @@ def parse_extract_command
       options[:url] = url
     end
   end
-  extract_options.order!
+  extract_options.parse!
   [options, extract_options]
 end
 

@@ -1,6 +1,7 @@
 require 'active_record'
 require_relative 'rspec_configuration_helper'
 require_relative '../db/schema.rb'
+require_relative '../db/build_execution_stats'
 require_relative '../models/test_case'
 require_relative '../models/test_run'
 require_relative '../models/test_suite'
@@ -13,7 +14,7 @@ module DBUtils
   end
 
   def create_test_suite(config)
-    test_suite = TestSuite.find_or_create_by_suite(suite: config['options']['suite'])
+    test_suite = TestSuite.find_or_create_by(suite: config['options']['suite'])
   end
 
   def create_test_run(test_suite, global_file_lock = '/tmp/.rspec2db.yaml')

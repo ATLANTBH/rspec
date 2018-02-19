@@ -5,7 +5,6 @@ require 'active_record'
 module DBUtils
   def self.build_stats(build_id, file_name, limit, suite, config, reporter_url = 'http://localhost/')
     ActiveRecord::Base.establish_connection(config)
-
     if limit == nil
       @query = "select tr.* from test_runs tr, test_suites ts where ts.id = tr.test_suites_id and tr.build LIKE '#{build_id}' and ts.suite LIKE '#{suite}' order by tr.created_at desc limit 1"
     elsif limit == 'all'
