@@ -4,6 +4,10 @@ require 'yaml'
 require_relative './rspec2db/utils/db_utils'
 require_relative './rspec2db/utils/rspec_configuration_helper'
 
+
+# DEV
+require 'byebug'
+
 class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
   include DBUtils
   include RSpecConfigurationHelper
@@ -17,7 +21,9 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
                                          :dump_failures,
                                          :dump_pending,
                                          :dump_summary,
-                                         :dump_profile
+                                         :dump_profile,
+                                         :screenshot_saved,
+                                         :screenshot_uploaded
 
   attr_reader :output,
               :results,
@@ -35,6 +41,7 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
     connect_to_db @config
     @test_suite = create_test_suite(config)
     @test_run = create_test_run(@test_suite)
+    @screenshot_event = {}
   end
 
   def start(notification)
@@ -51,15 +58,16 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
   end
 
   def example_passed(notification)
-    @current_test_case = create_test_case(@test_run, @example_group, notification.example, @config['options']['backtrace'])
+    
+    @current_test_case = create_test_case(@test_run, @example_group, notification.example, @config['options']['backtrace'], @screenshot_event)
   end
 
   def example_pending(notification)
-    @current_test_case = create_test_case(@test_run, @example_group, notification.example, @config['options']['backtrace'])
+    @current_test_case = create_test_case(@test_run, @example_group, notification.example, @config['options']['backtrace'], @screenshot_event)
   end
 
   def example_failed(notification)
-    @current_test_case = create_test_case(@test_run, @example_group, notification.example, @config['options']['backtrace'])
+    @current_test_case = create_test_case(@test_run, @example_group, notification.example, @config['options']['backtrace'], @screenshot_event)
   end
 
   def message(notification)
@@ -75,6 +83,20 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
   end
 
   def dump_failures(notification)
+  end
+
+  def screenshot_saved(notification)
+    @screenshot_event.merge!(
+      screenshot_path: notification[:screenshot_path],
+      example: notification[:example]
+    )
+  end
+
+  def screenshot_uploaded(notification)
+    @screenshot_event.merge!(
+      screenshot_url: notification[:screenshot_url],
+      example: notification[:example]
+    )
   end
 
   def dump_summary(notification)

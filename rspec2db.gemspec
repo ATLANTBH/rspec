@@ -15,6 +15,5 @@ Gem::Specification.new do |s|
   s.add_dependency 'pg', '~>0.21'
   s.add_dependency 'activerecord-postgresql-adapter'
   s.add_dependency 'rspec', '>= 3.0'
-  s.add_dependency 'pry'
-  s.add_dependency 'pry-nav'
+  s.add_dependency 'byebug'
 end

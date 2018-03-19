@@ -39,7 +39,7 @@ module DBUtils
     test_run
   end
 
-  def create_test_case(test_run, example_group, example, backtrace = nil)
+  def create_test_case(test_run, example_group, example, backtrace = nil, screenshot_event = nil)
     example
     test_case = TestCase.create(
       test_runs_id: test_run.id,
@@ -62,6 +62,11 @@ module DBUtils
       test_case.update_attributes(
         context: example_group.description
       )
+    end
+    if screenshot_event[:example] && screenshot_event[:example] == example.description
+      screenshot_event.delete :example
+      test_case.update_attributes screenshot_event
+      screenshot_event = {}
     end
     test_case
   end

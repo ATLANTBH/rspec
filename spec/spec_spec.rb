@@ -1,5 +1,4 @@
 describe "Dummy describe" do # this spec file is just for test / demo purposes
-  
   context "CoNtExT" do
     it "does nothing, within context" do
       1.should eql(1)
