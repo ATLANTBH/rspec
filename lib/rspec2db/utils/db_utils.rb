@@ -11,6 +11,7 @@ module DBUtils
 
   def connect_to_db(config)
     ActiveRecord::Base.establish_connection(config['dbconnection'])
+    ActiveRecord::Base.default_timezone = :local
   end
 
   def create_test_suite(config)
