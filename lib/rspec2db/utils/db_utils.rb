@@ -18,7 +18,7 @@ module DBUtils
     test_suite = TestSuite.find_or_create_by(suite: config['options']['suite'])
   end
 
-  def create_test_run(test_suite, global_file_lock = '/tmp/.rspec2db.yaml')
+  def create_test_run(test_suite, config, global_file_lock = '/tmp/.rspec2db.yaml')
     test_run_hash = {
       build: config['options']['build'],
       test_suites_id: test_suite.id,
