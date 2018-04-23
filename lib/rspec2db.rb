@@ -40,7 +40,7 @@ class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
     @config = RSpecConfigurationHelper.load_config
     connect_to_db @config
     @test_suite = create_test_suite(@config)
-    @test_run = create_test_run(@test_suitem, @config)
+    @test_run = create_test_run(@test_suite, @config)
     @screenshot_event = {}
   end
 
