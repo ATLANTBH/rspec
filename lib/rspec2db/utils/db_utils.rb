@@ -22,8 +22,8 @@ module DBUtils
     test_run_hash = {
       build: config['options']['build'],
       test_suites_id: test_suite.id,
-      git_hash: config['GIT_COMMIT'],
-      git_branch: config['GIT_BRANCH']
+      git_hash: config['options']['git_commit'],
+      git_branch: config['options']['git_branch']
     }
     global_lock = File.new(global_file_lock, File::CREAT | File::TRUNC)
 
