@@ -17,6 +17,7 @@ module RSpecConfigurationHelper
       config['file_path'] = file_path
       config
     end
+    override_default_config config
   end
 
   def self.generate_local_config
@@ -52,6 +53,17 @@ module RSpecConfigurationHelper
       f.puts rspec2db_formatter
       f.flush
     end
+  end
+
+  def self.override_default_config(config)
+    config["options"].each do |key, value|
+      config["options"][key] = ENV[key.upcase] unless ENV[key.upcase].nil?
+    end
+
+    config["dbconnection"].each do |key, value|
+      config["dbconnection"][key] = ENV[key.upcase] unless ENV[key.upcase].nil?
+    end
+    config
   end
 
   def self.check_rspec_options

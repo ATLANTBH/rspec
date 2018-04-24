@@ -2,6 +2,8 @@ options:
   suite: 'suite name'
   build: '1' #
   backtrace: false
+  git_commit:
+  git_branch:
 dbconnection:
   adapter: postgresql
   database:  rspec
