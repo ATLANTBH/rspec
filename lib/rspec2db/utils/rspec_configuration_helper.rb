@@ -20,9 +20,7 @@ module RSpecConfigurationHelper
     override_default_config config
   end
 
-  def self.generate_local_config
-    rspec2db_config_file = File.join(ENV['HOME'] + '/.rspec2db.yaml')
-
+  def self.generate_local_config(rspec2db_config_file)
     if File.exist?(rspec2db_config_file)
       puts 'Default config file exists, override with default? (Y/N)'
       override = STDIN.gets.chomp
@@ -35,7 +33,16 @@ module RSpecConfigurationHelper
   end
 
   def self.load_local_config
-    rspec2db_config_file = File.join(ENV['HOME'] + '/.rspec2db.yaml')
+    rspec2db_local_config_file = File.join(ENV['HOME'] + '/.rspec2db.yaml')
+    rspec2db_project_config_file = File.join('./config/rspec2db.yml')
+
+    if File.exists?(rspec2db_project_config_file)
+      rspec2db_config_file = rspec2db_project_config_file
+      puts 'Using project config file'
+    else
+      puts 'No project file detected. Looking for local config file'
+      rspec2db_config_file = rspec2db_local_config_file
+    end
 
     if !File.exist?(rspec2db_config_file)
       puts 'Default rspec2db config file does not exist. Creating default.'

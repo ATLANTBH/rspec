@@ -15,7 +15,12 @@ module DBUtils
   end
 
   def create_test_suite(config)
-    test_suite = TestSuite.find_or_create_by(suite: config['options']['suite'])
+    begin
+      test_suite = TestSuite.find_or_create_by(suite: config['options']['suite'])
+    rescue ActiveRecord::RecordNotUnique => active_record_error
+      puts active_record_error
+      test_suite = TestSuite.find_by(suite: config['options']['suite'])
+    end
   end
 
   def create_test_run(test_suite, config, global_file_lock = '/tmp/.rspec2db.yaml')
