@@ -2,10 +2,6 @@
 require 'optparse'
 require 'yaml'
 require 'fileutils'
-require 'pry'
-require 'pry-nav'
-require 'pry'
-require 'pry-nav'
 require_relative '../lib/rspec2db/utils/db_utils'
 require_relative '../lib/rspec2db/utils/rspec_configuration_helper'
 
