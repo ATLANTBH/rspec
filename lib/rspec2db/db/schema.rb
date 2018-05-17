@@ -43,6 +43,8 @@ module DBUtils
 
   def self.migrate_rspec_db(dbconfig)
     ActiveRecord::Base.establish_connection(dbconfig)
-    ActiveRecord::Migrator.migrate './lib/rspec2db/db/migrations'
+    migrations_path = Bundler.rubygems.find_name('rspec2db').first.full_gem_path + './lib/rspec2db/db/migrations'
+    migration_context = ActiveRecord::MigrationContext.new(migrations_path)
+    migration_context.migrate
   end
 end

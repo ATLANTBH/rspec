@@ -8,6 +8,7 @@ module RSpecConfigurationHelper
 
     if file_path.nil?
       puts 'No rspec2db config specified in .rspec'
+      return nil
     elsif !File.exists?(file_path)
       puts 'could not find the config file at the following location: ' + file_path
       abort 'exiting... please check your config file' if failsafe
@@ -28,7 +29,8 @@ module RSpecConfigurationHelper
     end
 
     puts 'Creating default rspec2db config file (' + rspec2db_config_file + ')'
-    rspec2db_config_src = './config/rspec2db.yml'
+    rspec2db_bundler_path = Bundler.rubygems.find_name('rspec2db').first.full_gem_path
+    rspec2db_config_src = rspec2db_bundler_path + '/config/rspec2db.yml'
     FileUtils.cp rspec2db_config_src, rspec2db_config_file
   end
 
@@ -80,7 +82,7 @@ module RSpecConfigurationHelper
     config = RSpecConfigurationHelper.load_config(false)
     if config.nil?
       puts 'Loading default rspec2db options (' + rspec2db_config_file + ')'
-      RSpecConfigurationHelper.generate_local_config
+      RSpecConfigurationHelper.generate_local_config rspec2db_config_file
       RSpecConfigurationHelper.insert_rspec2db_formatter rspec_options_file, rspec2db_config_file
       return RSpecConfigurationHelper.load_config
     end

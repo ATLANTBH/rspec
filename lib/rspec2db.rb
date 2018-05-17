@@ -5,9 +5,6 @@ require_relative './rspec2db/utils/db_utils'
 require_relative './rspec2db/utils/rspec_configuration_helper'
 
 
-# DEV
-require 'byebug'
-
 class Rspec2db < RSpec::Core::Formatters::BaseTextFormatter
   include DBUtils
   include RSpecConfigurationHelper

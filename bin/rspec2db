@@ -73,8 +73,7 @@ def parse_options(load_local = true)
     end
   end
   option_parser.order!
-
-  return [options, option_parser] unless load_local
+  return [options, option_parser] unless options.empty?
 
   if options.empty?
     puts 'Loading default rspec2db configuration.'
@@ -89,17 +88,15 @@ def parse_options(load_local = true)
   [options, option_parser]
 end
 
-options, option_parser = parse_options(false)
+options, option_parser = parse_options
 command = ARGV[0]
 case command
 when 'init'
   options = RSpecConfigurationHelper.check_rspec_options
   puts 'No .rspec file found in working directory' if options.nil?
 when 'create'
-  options, option_parser = parse_options
   DBUtils.create_rspec_db options
 when 'migrate'
-  options, option_parser = parse_options
   DBUtils.migrate_rspec_db options
 when 'build-stats'
   options, option_parser = parse_options
