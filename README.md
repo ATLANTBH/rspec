@@ -62,3 +62,40 @@ ruby config/build_execution_stats.rb <build_number> <results_file>
     - not specified - results for only one run (the first one) will be in the results file
     - all - results for all runs will be in the results file
 - test_reporter_url (optional) is the url of the Test Reporter tool which can be used in conjunction with rspec2db gem. If you use this parameter, you need to specify base url of your Test Reporter instance (for example: http://testreporter:8080). Based on this url, script will generate exact url path to this specific run which contains list of tests that have been executed
+
+## Rspec2DB CLI
+
+Rspec2db provides a CLI tool that helps users with bootstraping by generating configuration files. 
+
+```
+$ rspec2db
+Loading default rspec2db configuration.
+Using project config file
+No command provided
+Usage: rspec2db [options] <command>
+
+init    - initialize rspec2db config file (~/.rspec2db.yaml)
+create  - creates rspec2db database
+migrate - migrates rspec2db database
+build-stats - extracts test run execution based on test run id
+
+Options:
+    -H, --host=h                     rspec2db database host
+    -p, --port=port                  rspec2db database port
+    -d, --database=db                rspec2db database name
+    -u, --username=u                 rspec2db database username
+    -w, --password=pw                rspec2db database user password
+    -a, --adapter=ad                 rspec2db database adapter
+    -h, --help                       rspec2db help
+```
+### Usage
+The tool provides number of options for onboarding:
+1. `init` - Initialization of a global configuration file (stored in the home directory) with predefined configuration, and should be modifed (ie. values in `~/.rspec2db.yml` should be changed). This will also add Rspec2db formater to your spec `.rspec` file
+2. `create` - Rake-like task that will create and seed the db.
+3. `migrate` - Rake-like task that will migrate latest changes to the db
+3. `build-stats` - Export of Test execution results and statistics for a Test build
+
+### Other
+DB tasks and Export load the rspec2db configuration file that is either defined in the `.rspec` file in your spec directory, or loads the default configuration file in your home directory.
+Default configuration (from the `rspec2db.yaml`) can be overriden using the provided CLI options for targeting a specific DB (ie. by providing host, port, db credentials and similar).
+
