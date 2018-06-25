@@ -3,7 +3,7 @@ rspec2db: RSpec DB Formatter
 
 
 ## Description
-rspec2db is a ruby gem used for storing rspec execution results to a database. The gem on it's own is an extension of RSpec formatter and has to be added to RSpec `.rspec`. Once added, the gem will handle all test steps by storing their description, results and similar information to a database.
+rspec2db is a Ruby gem used for storing rspec test execution results to a database. This gem extends RSpec formatter and has to be required in `.rspec` (which is done by rspec2db init command described below). Once added, the gem will handle storing all test related informations (test suites, test cases, test steps) into the database. By default, rspec2db supports writing to postgresql database but can be easily adjusted to write results into other relational databases as well since it uses ActiveRecord for persisting data.
 
 The gem also provides a CLI tool meant for bootstrapping rspec2db configuration files.
 
@@ -35,7 +35,7 @@ Options:
 ```
 ### Usage
 The tool provides number of options for onboarding:
-1. `init` - Initialization of a global configuration file (stored in the home directory) with predefined configuration, and should be modifed (ie. values in `~/.rspec2db.yml` should be changed). This will also add Rspec2db formater to your spec `.rspec` file
+1. `init` - Initialization of a global configuration file (stored in the home directory) with predefined configuration that can be modified (ie. values in `~/.rspec2db.yaml` should be changed to appropriate values). This will also add Rspec2db formater to your spec `.rspec` file.
 2. `create` - Rake-like task that will create and seed the db.
 3. `migrate` - Rake-like task that will migrate latest changes to the db
 3. `build-stats` - Export of Test execution results and statistics for a Test build
@@ -114,7 +114,7 @@ Usage: rspec2db [options]
 To execute the script with all optional parameters, run the following command:
 
 ```
-rspec2db -i <build_number> -l <limit> -o <output_file> -U <reporter_url>
+rspec2db build-stats -i <build_number> -l <limit> -o <output_file> -U <reporter_url>
 ```
 
 - build_number is a user specified value which needs to be the same like the one found in rspec2db.yml configuration file
