@@ -114,7 +114,7 @@ Usage: rspec2db [options]
 To execute the script with all optional parameters, run the following command:
 
 ```
-rspec2db build-stats -i <build_number> -l <limit> -o <output_file> -U <reporter_url>
+rspec2db build-stats -i <build_number> -l <limit> -o <output_file> -s <test_suite> -U <reporter_url>
 ```
 
 - build_number is a user specified value which needs to be the same like the one found in rspec2db.yml configuration file
@@ -122,6 +122,7 @@ rspec2db build-stats -i <build_number> -l <limit> -o <output_file> -U <reporter_
 - limit (optional) determines if the statistics will be calculated for a single run with same build_number or for all runs with same build_number: 
     - not specified - results for only one run (the first one) will be in the results file
     - all - results for all runs will be in the results file
+- test_suite is the name of the suite from which we want to query results
 - reporter_url (optional) is the url of the Test Reporter tool which can be used in conjunction with rspec2db gem. If you use this parameter, you need to specify base url of your Test Reporter instance (for example: http://testreporter:8080). Based on this url, script will generate exact url path to this specific run which contains list of tests that have been executed
 
 
