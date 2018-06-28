@@ -71,7 +71,9 @@ $ rspec2db migrate
 Loading default rspec2db configuration.
 No project file detected. Looking for local config file
 ```
+
 This flow will result in a configured PG Database and a configuration file that can be used among different projects.
+
 
 To reuse the existing configuration file in a separate rspec spec project, simply run `rspec init`. This will configure your `.rspec` file:
 `
@@ -124,5 +126,14 @@ rspec2db build-stats -i <build_number> -l <limit> -o <output_file> -s <test_suit
     - all - results for all runs will be in the results file
 - test_suite is the name of the suite from which we want to query results
 - reporter_url (optional) is the url of the Test Reporter tool which can be used in conjunction with rspec2db gem. If you use this parameter, you need to specify base url of your Test Reporter instance (for example: http://testreporter:8080). Based on this url, script will generate exact url path to this specific run which contains list of tests that have been executed
+- suite_name - name of the test suite that was specified in `rspec2db.yml` file and for which the stats are calculated
 
 
+### Updating Rspec2DB gem version
+
+If you are updating Rspec2DB gem from a to a newer version, running `rspec2db migrate` is required. This command will migrate the database so that it satisfies the Rspec2DB model, if it was changed.
+
+```
+$ bundle update rspec2db
+$ bundle exec rspec2db migrate
+```
