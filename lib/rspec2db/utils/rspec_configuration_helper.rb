@@ -36,23 +36,16 @@ module RSpecConfigurationHelper
 
   def self.load_local_config
     rspec2db_local_config_file = File.join(ENV['HOME'] + '/.rspec2db.yaml')
-    rspec2db_project_config_file = File.join('./config/rspec2db.yml')
+    rspec2db_project_config = RSpecConfigurationHelper.load_config
 
-    if File.exists?(rspec2db_project_config_file)
-      rspec2db_config_file = rspec2db_project_config_file
+    unless rspec2db_project_config.nil?
       puts 'Using project config file'
     else
       puts 'No project file detected. Looking for local config file'
-      rspec2db_config_file = rspec2db_local_config_file
+      rspec2db_project_config = YAML::load(File.open(rspec2db_local_config_file))
     end
 
-    if !File.exist?(rspec2db_config_file)
-      puts 'Default rspec2db config file does not exist. Creating default.'
-      generate_local_config rspec2db_config_file
-    end
-    rspec2db_config = YAML::load(File.open(rspec2db_config_file))
-
-    Hash[rspec2db_config['dbconnection'].map { |k, v| [k.to_sym, v] }]
+    Hash[rspec2db_project_config['dbconnection'].map { |k, v| [k.to_sym, v] }]
   end
 
   def self.insert_rspec2db_formatter(rspec_file, rspec2db_config_file)

@@ -5,8 +5,14 @@ require 'fileutils'
 require_relative '../lib/rspec2db/utils/db_utils'
 require_relative '../lib/rspec2db/utils/rspec_configuration_helper'
 
+def check_required_options(required_options, options)
+  missing_options = required_options - options.keys.map { |k| k.to_s }
+  abort 'Missing required options: ' + missing_options.reduce { |m, k| m + ', ' + k } unless missing_options.empty?
+end
+
 def parse_extract_command
   options = {}
+  required_options = ['id', 'file', 'suite']
   extract_options = OptionParser.new do |opts|
     opts.on('-i id', '--id=id', 'rspec2db test build id') do |id|
       options[:id] = id
@@ -17,7 +23,7 @@ def parse_extract_command
     end
 
     opts.on('-l [LIMIT]', '--limit [LIMIT]', 'rspec2db number of extracted test runs') do |l|
-      options[:limit] == l || nil
+      options[:limit] = l || nil
     end
 
     opts.on('-s suite', '--suite suite', 'rspec2db test suite') do |suite|
@@ -29,6 +35,7 @@ def parse_extract_command
     end
   end
   extract_options.parse!
+  check_required_options(required_options, options)
   [options, extract_options]
 end
 
@@ -80,9 +87,7 @@ def parse_options(load_local = true)
     options = RSpecConfigurationHelper.load_local_config
   end
 
-  missing_options = required_options - options.keys.map { |k| k.to_s }
-  abort 'Missing required options: ' + missing_options.reduce { |m, k| m + ', ' + k } unless missing_options.empty?
-
+  check_required_options(required_options, options)
   options[:adapter] = 'postgresql' if options[:adapter].nil?
 
   [options, option_parser]
@@ -99,7 +104,6 @@ when 'create'
 when 'migrate'
   DBUtils.migrate_rspec_db options
 when 'build-stats'
-  options, option_parser = parse_options
   build_options, extract_option_parser = parse_extract_command
   if build_options.empty?
     puts extract_option_parser
