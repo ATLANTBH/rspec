@@ -35,14 +35,21 @@ module RSpecConfigurationHelper
   end
 
   def self.load_local_config
-    rspec2db_local_config_file = File.join(ENV['HOME'] + '/.rspec2db.yaml')
+    rspec2db_default_config_file = './rspec2db.yaml'
     rspec2db_project_config = RSpecConfigurationHelper.load_config
-
+    rspec_options_file = '.rspec'
     unless rspec2db_project_config.nil?
       puts 'Using project config file'
     else
-      puts 'No project file detected. Looking for local config file'
-      rspec2db_project_config = YAML::load(File.open(rspec2db_local_config_file))
+      puts 'No project file specified in .rspec. Looking for default rspec2db.yaml file'
+      if File.exists? rspec2db_default_config_file
+        rspec2db_project_config = YAML::load(File.open(rspec2db_default_config_file))
+      else
+        puts 'File not found, generating a default rpsec2db.yaml'
+        RSpecConfigurationHelper.generate_local_config(rspec2db_default_config_file)
+        rspec2db_project_config = YAML::load(File.open(rspec2db_default_config_file))
+      end
+      RSpecConfigurationHelper.insert_rspec2db_formatter rspec_options_file, rspec2db_default_config_file
     end
 
     Hash[rspec2db_project_config['dbconnection'].map { |k, v| [k.to_sym, v] }]
@@ -70,11 +77,12 @@ module RSpecConfigurationHelper
 
   def self.check_rspec_options
     rspec_options_file = '.rspec'
-    rspec2db_config_file = ENV['HOME'] + '/.rspec2db.yaml'
+    rspec2db_config_file = './rspec2db.yaml'
+
     return nil unless File.exist?(rspec_options_file)
     config = RSpecConfigurationHelper.load_config(false)
     if config.nil?
-      puts 'Loading default rspec2db options (' + rspec2db_config_file + ')'
+      puts 'Creating rspec2db config file (' + rspec2db_config_file + ')'
       RSpecConfigurationHelper.generate_local_config rspec2db_config_file
       RSpecConfigurationHelper.insert_rspec2db_formatter rspec_options_file, rspec2db_config_file
       return RSpecConfigurationHelper.load_config
