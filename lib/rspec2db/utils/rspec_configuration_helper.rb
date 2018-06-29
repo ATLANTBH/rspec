@@ -18,7 +18,9 @@ module RSpecConfigurationHelper
       config['file_path'] = file_path
       config
     end
-    override_default_config config
+    # Bakir: disabled override by environment variables because it can cause unwanted side-effects 
+    #(for example: env variable defined by specific name like BUILD can override what user defined in rspec2db.yaml)
+    #override_default_config config
   end
 
   def self.generate_local_config(rspec2db_config_file)
