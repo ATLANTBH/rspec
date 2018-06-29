@@ -45,7 +45,7 @@ def parse_options(load_local = true)
 
   option_parser = OptionParser.new do |opts|
     opts.banner = "Usage: rspec2db [options] <command>\n" + \
-                  "\ninit    - initialize rspec2db config file (" + ENV['HOME'] + "/.rspec2db.yaml)" \
+                  "\ninit    - initialize rspec2db config file (" + ENV['PWD'] + "/rspec2db.yaml)" \
                   "\ncreate  - creates rspec2db database" + \
                   "\nmigrate - migrates rspec2db database" + \
                   "\nbuild-stats - extracts test run execution based on test run id" + \

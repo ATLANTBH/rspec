@@ -19,7 +19,7 @@ Using project config file
 No command provided
 Usage: rspec2db [options] <command>
 
-init    - initialize rspec2db config file (~/.rspec2db.yaml)
+init    - initialize rspec2db config file (~/rspec2db.yaml)
 create  - creates rspec2db database
 migrate - migrates rspec2db database
 build-stats - extracts test run execution based on test run id
@@ -35,7 +35,7 @@ Options:
 ```
 ### Usage
 The tool provides number of options for onboarding:
-1. `init` - Initialization of a global configuration file (stored in the home directory) with predefined configuration that can be modified (ie. values in `~/.rspec2db.yaml` should be changed to appropriate values). This will also add Rspec2db formater to your spec `.rspec` file.
+1. `init` - Initialization of a global configuration file (stored in the home directory) with predefined configuration that can be modified (ie. values in `~/rspec2db.yaml` should be changed to appropriate values). This will also add Rspec2db formater to your spec `.rspec` file.
 2. `create` - Rake-like task that will create and seed the db.
 3. `migrate` - Rake-like task that will migrate latest changes to the db
 3. `build-stats` - Export of Test execution results and statistics for a Test build
@@ -47,13 +47,13 @@ $ rspec2db init
 Loading default rspec2db configuration.
 Using project config file
 No rspec2db config specified in .rspec
-Loading default rspec2db options (/Users/user/.rspec2db.yaml)
-Creating default rspec2db config file (/Users/user/.rspec2db.yaml)
+Loading default rspec2db options (/Users/user/rspec2db.yaml)
+Creating default rspec2db config file (/Users/user/rspec2db.yaml)
 Adding rspec2db options and formatter to .rspec
 ```
 
 ```
-# Edit ~/.rspec2db.yaml to use your PG database. Database has to exist before running create task.
+# Edit ~/rspec2db.yaml to use your PG database. Database has to exist before running create task.
 $ rspec2db create
 Loading default rspec2db configuration.
 No project file detected. Looking for local config file
@@ -82,7 +82,7 @@ bundle exec rspec2db init
 Loading default rspec2db configuration.
 No project file detected. Looking for local config file
 No rspec2db config specified in .rspec
-Loading default rspec2db options (/Users/user/.rspec2db.yaml)
+Loading default rspec2db options (/Users/user/rspec2db.yaml)
 Default config file exists, override with default? (Y/N)
 N
 Adding rspec2db options and formatter to .rspec
