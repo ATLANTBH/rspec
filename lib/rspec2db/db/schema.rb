@@ -19,6 +19,7 @@ module DBUtils
         t.integer :pending_count
         t.string :build
         t.string :computer_name
+        t.string :environment
         t.string :git_hash
         t.string :git_branch
         t.timestamps
@@ -30,6 +31,8 @@ module DBUtils
         t.string :context
         t.string :description
         t.string :execution_result
+        t.string :screenshot_path
+        t.string :screenshot_url
         t.text :exception
         t.string :pending_message
         t.float :duration
@@ -43,7 +46,7 @@ module DBUtils
 
   def self.migrate_rspec_db(dbconfig)
     ActiveRecord::Base.establish_connection(dbconfig)
-    migrations_path = Bundler.rubygems.find_name('rspec2db').first.full_gem_path + './lib/rspec2db/db/migrations'
+    migrations_path = Bundler.rubygems.find_name('rspec2db').first.full_gem_path + '/lib/rspec2db/db/migrations'
     migration_context = ActiveRecord::MigrationContext.new(migrations_path)
     migration_context.migrate
   end

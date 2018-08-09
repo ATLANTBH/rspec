@@ -19,6 +19,7 @@ ActiveRecord::Base.transaction do
     t.integer :pending_count
     t.string :build
     t.string :computer_name
+    t.string :environment
     t.string :git_hash
     t.string :git_branch
     t.timestamps
@@ -30,6 +31,8 @@ ActiveRecord::Base.transaction do
     t.string :context
     t.string :description
     t.string :execution_result
+    t.string :screenshot_path
+    t.string :screenshot_url
     t.text :exception
     t.string :pending_message
     t.float :duration

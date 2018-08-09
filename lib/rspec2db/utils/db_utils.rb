@@ -28,7 +28,8 @@ module DBUtils
       build: config['options']['build'],
       test_suites_id: test_suite.id,
       git_hash: config['options']['git_commit'],
-      git_branch: config['options']['git_branch']
+      git_branch: config['options']['git_branch'],
+      environment: config['options']['environment']
     }
     global_lock = File.new(global_file_lock, File::CREAT | File::TRUNC)
 
