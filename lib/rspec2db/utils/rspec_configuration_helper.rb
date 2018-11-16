@@ -99,7 +99,7 @@ module RSpecConfigurationHelper
   end
 
   def load_snippet_extractor
-    major_version, minor_version = @rspec_core_version
+    major_version, minor_version = extract_rspec_core_version
 
     if major_version == 3 && minor_version < 4
       require 'rspec/core/formatters/snippet_extractor'
