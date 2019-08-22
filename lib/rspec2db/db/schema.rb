@@ -33,6 +33,9 @@ module DBUtils
         t.string :execution_result
         t.string :screenshot_path
         t.string :screenshot_url
+        t.string :bug_title
+        t.string :bug_url
+        t.string :notes
         t.text :exception
         t.string :pending_message
         t.float :duration
