@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.homepage      = 'https://github.com/ATLANTBH/rspec'
 
   s.add_dependency 'activerecord', '~>5.1'
-  s.add_dependency 'pg', '~>0.21'
+  s.add_dependency 'pg', '~>1.4.1'
   s.add_dependency 'activerecord-postgresql-adapter'
   s.add_dependency 'rspec', '>= 3.0'
 end
